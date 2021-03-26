@@ -1,5 +1,4 @@
 // Discord.js bot
-const env = "production";
 const Discord = require('discord.js');
 const Sequelize = require('sequelize');
 const config = require('./config/config.json');
