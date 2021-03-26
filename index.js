@@ -80,40 +80,7 @@ client.on('message', msg => {
     const command = msg.content.split(' ')[0].substr(process.env.PREFIX.length);
     const args = msg.content.split(' ').slice(1).join(' ');
     if (command === 'I\'m') UserCreate(args, message.author.id);
-    else if (command === 'invite') return msg.channel.send(process.env.INVITE);
-});
-
-client.on('message', async message => {
-	if (!msg.content.startsWith(process.env.PREFIX) || !msg.guild) return;
-  const command = msg.content.split(' ')[0].substr(process.env.PREFIX.length);
-  const args = msg.content.split(' ').slice(1).join(' ');
-
-		if (command === 'I\'m') {
-			const commanderName = commandArgs;
-			const verifyDiscordID = message.author.id;
-
-
-		} else if (command === 'pets') {
-				const verifyDiscordID = message.author.id;
-				const thisUser = await Users.findOne({ where: { discordID: verifyDiscordID }, attributes: ['id', 'username', 'totalPets', 'allowedPets']  });
-				const yourPets = parseInt(thisUser.totalPets);
-				const yourMax = parseInt(thisUser.allowedPets);
-				console.log(thisUser);
-				if (!thisUser) {
-					return message.reply(`Wow, I totally don't have you in my system. Can you please try **~Wildernest I'm USERNAME**, where USERNAME is the name you want, before checking for pets?`);
-				}
-				else if (yourPets === 0) {
-					return message.reply(`Hey ${thisUser.username}. You don't have any pets at all.`);
-				}
-				else if (yourPets >= yourMax) {
-					return message.reply(`Hey ${thisUser.username}. You have ${yourPets} pets, which is more than your allowed maximum of ${yourMax}. That could be a problem.`);
-				}
-				else {
-					return message.reply(`Hey ${thisUser.username}. You have ${yourPets} pets. When I'm a little smarter I'll show them to you here.`);
-				}
-
-			}
-	}
+    else if (command === 'Pets') UserCreate(message.author.id);
 });
 
 function UserCreate(commanderName, verifyDiscordID) {
@@ -156,5 +123,25 @@ function UserCreate(commanderName, verifyDiscordID) {
     }
   }
 }
+
+function PetsCreate(verifyDiscordID) {
+      const verifyDiscordID = message.author.id;
+      const thisUser = await Users.findOne({ where: { discordID: verifyDiscordID }, attributes: ['id', 'username', 'totalPets', 'allowedPets']  });
+      const yourPets = parseInt(thisUser.totalPets);
+      const yourMax = parseInt(thisUser.allowedPets);
+      console.log(thisUser);
+      if (!thisUser) {
+        return message.reply(`Wow, I totally don't have you in my system. Can you please try **~Wildernest I'm USERNAME**, where USERNAME is the name you want, before checking for pets?`);
+      }
+      else if (yourPets === 0) {
+        return message.reply(`Hey ${thisUser.username}. You don't have any pets at all.`);
+      }
+      else if (yourPets >= yourMax) {
+        return message.reply(`Hey ${thisUser.username}. You have ${yourPets} pets, which is more than your allowed maximum of ${yourMax}. That could be a problem.`);
+      }
+      else {
+        return message.reply(`Hey ${thisUser.username}. You have ${yourPets} pets. When I'm a little smarter I'll show them to you here.`);
+      }
+    }
 
 client.login(process.env.TOKEN);
