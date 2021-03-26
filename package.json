@@ -1,5 +1,5 @@
 {
-  "name": "wildernestbot",
+  "name": "wildernest_bot",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,14 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
-  "author": "",
+  "author": "Zelle Marcovicci",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^12.5.1",
-    "dotenv": "^8.2.0",
-    "eslint": "^7.22.0",
-    "sequelize": "^6.5.1",
-    "sqlite": "^4.0.19",
-    "sqlite3": "^5.0.2"
+    "sequelize": "^6.5.1"
   }
 }
