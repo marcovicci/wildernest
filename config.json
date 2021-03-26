@@ -1,16 +1,6 @@
 {
-	"development": {
-		"use_env_variable": "process.env.DATABASE_URL",
-    "dialect": "postgres"
-  },
-  "test": {
-		"use_env_variable": "process.env.DATABASE_URL",
-    "dialect": "postgres"
-  },
-  "production": {
-    "use_env_variable": "process.env.DATABASE_URL",
-    "dialect": "postgres"
-  },
+	"use_env_variable": "DATABASE_URL",
+	"dialect": "postgres",
 	"prefix": "!",
 	"token": "ODIwODAwMDY4OTQ3OTM1MzAz.YE6bog.KAJnZ4xtCi2ZD479DP27ODHG74k",
 	"database": "d3n23v8vksn42a",
