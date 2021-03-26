@@ -70,8 +70,8 @@ const Pets = sequelize.define('pets', {
 
 client.on('ready', () => {
     client.user.setActivity('carefully', {type: 'WATCHING'});
-    //Users.sync();
-  	//Pets.sync();
+    Users.sync();
+  	Pets.sync();
   	console.log('hewwo')
 });
 
