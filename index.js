@@ -1,11 +1,11 @@
 // Discord.js bot
-const env = 'development';
+const env = "production";
 const Discord = require('discord.js');
 const Sequelize = require('sequelize');
 const config = require('./config/config.json');
 const client = new Discord.Client();
 
-const sequelize = new Sequelize(process.env[config.use_env_variable]);
+const sequelize = new Sequelize(config.use_env_variable);
 
 const Users = sequelize.define('users', {
 	username: {
