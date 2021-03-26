@@ -6,8 +6,8 @@
       "ssl": {
         "require": true,
         "rejectUnauthorized": false
-      },
-    },
+      }
+    }
   },
   "test": {
     "use_env_variable": "DATABASE_URL",
