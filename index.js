@@ -95,10 +95,10 @@ function UserCreate(commanderName, verifyDiscordID) {
     console.log(e);
     if (e.name === 'SequelizeUniqueConstraintError') {
       //is the username the problem?
-      const existingUser = await Users.findOne({ where: { username: commanderName }, attributes: ['id', 'username', 'discordID'] });
+      const existingUser = Users.findOne({ where: { username: commanderName }, attributes: ['id', 'username', 'discordID'] });
       if (!existingUser) {
         //if the user doesn't exist, is the ID the problem?
-        const existingUser = await Users.findOne({ where: { discordID: verifyDiscordID }, attributes: ['id', 'username', 'discordID'] });
+        const existingUser = Users.findOne({ where: { discordID: verifyDiscordID }, attributes: ['id', 'username', 'discordID'] });
       }
       console.log(existingUser);
       //if there's a name but no ID, just add the ID in
@@ -126,7 +126,7 @@ function UserCreate(commanderName, verifyDiscordID) {
 
 function PetsCreate(verifyDiscordID) {
       const verifyDiscordID = message.author.id;
-      const thisUser = await Users.findOne({ where: { discordID: verifyDiscordID }, attributes: ['id', 'username', 'totalPets', 'allowedPets']  });
+      const thisUser = Users.findOne({ where: { discordID: verifyDiscordID }, attributes: ['id', 'username', 'totalPets', 'allowedPets']  });
       const yourPets = parseInt(thisUser.totalPets);
       const yourMax = parseInt(thisUser.allowedPets);
       console.log(thisUser);
