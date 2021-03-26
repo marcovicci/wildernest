@@ -4,7 +4,7 @@ const Sequelize = require('sequelize');
 const config = require('./config.json');
 const client = new Discord.Client();
 
-const sequelize = new Sequelize(DATABASE_URL, config.username, config.password, {
+const sequelize = new Sequelize($DATABASE_URL, config.username, config.password, {
 	host: config.host,
 	dialect: 'postgres',
 	logging: false,
