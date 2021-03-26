@@ -27,6 +27,7 @@
   "homepage": "https://github.com/synicalsyntax/discord.js-heroku#readme",
   "dependencies": {
     "discord.js": "^11.3.0",
+    "pg": "^8.5.1",
     "sequelize": "^6.5.1"
   }
 }
