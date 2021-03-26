@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 const Sequelize = require('sequelize');
-
 const client = new Discord.Client();
 const PREFIX = process.env.PREFIX;
 
@@ -61,7 +60,7 @@ const Pets = sequelize.define('pets', {
 	}
 });
 
-client.once('ready', () => {
+client.on('ready', () => {
 	Users.sync();
 	Pets.sync();
 	console.log('hewwo')
