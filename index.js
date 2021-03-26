@@ -2,11 +2,19 @@ const Discord = require('discord.js');
 const Sequelize = require('sequelize');
 const client = new Discord.Client();
 const PREFIX = process.env.PREFIX;
+const config = require('./config.json');
 
-const sequelize = new Sequelize(DATABASE_URL, 'username', 'password', {
-	host: 'localhost',
+const sequelize = new Sequelize(DATABASE_URL, config.username, config.password, {
+	host: config.host,
 	dialect: 'postgres',
 	logging: false,
+	port: config.port,
+	pool: {
+	  max: 5,
+	  min: 0,
+	  acquire: 30000,
+	  idle: 10000
+  }
 });
 
 const Users = sequelize.define('users', {
