@@ -1,1 +1,1 @@
-worker: npm start
+worker: npm start NODE_ENV=production
