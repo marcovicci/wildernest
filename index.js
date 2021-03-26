@@ -5,7 +5,7 @@ const config = require('./config.json');
 const client = new Discord.Client();
 
 const sequelize = new Sequelize({
-	use_env_variable: 'DATABASE_URL',
+	use_env_variable: process.env.DATABASE_URL,
 	dialect: 'postgres',
 	logging: false,
 });
