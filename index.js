@@ -86,7 +86,7 @@ client.on('message', msg => {
 function UserCreate(commanderName, verifyDiscordID) {
   try {
     // equivalent to: INSERT INTO tags (name, descrption, username) values (?, ?, ?);
-    const tag = await Users.create({
+    const tag = Users.create({
       username: commanderName,
       discordID: verifyDiscordID,
     });
