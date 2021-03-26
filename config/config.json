@@ -1,0 +1,26 @@
+{
+  "development": {
+    "use_env_variable": "DATABASE_URL",
+    "username": "ohnlcfndkfpitr",
+    "password": "8ad16266c8d151358f994c3e38892209e38b037357e9c028e2222689fa69ef68",
+    "database": "d3n23v8vksn42a",
+    "host": "ec2-54-167-168-52.compute-1.amazonaws.com",
+    "dialect": "postgres"
+  },
+  "test": {
+    "use_env_variable": "DATABASE_URL",
+    "username": "ohnlcfndkfpitr",
+    "password": "8ad16266c8d151358f994c3e38892209e38b037357e9c028e2222689fa69ef68",
+    "database": "d3n23v8vksn42a",
+    "host": "ec2-54-167-168-52.compute-1.amazonaws.com",
+    "dialect": "postgres"
+  },
+  "production": {
+    "use_env_variable": "DATABASE_URL",
+    "username": "ohnlcfndkfpitr",
+    "password": "8ad16266c8d151358f994c3e38892209e38b037357e9c028e2222689fa69ef68",
+    "database": "d3n23v8vksn42a",
+    "host": "ec2-54-167-168-52.compute-1.amazonaws.com",
+    "dialect": "postgres"
+  }
+}
