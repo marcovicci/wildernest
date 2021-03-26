@@ -10,7 +10,8 @@ sequelize = new Sequelize(process.env.DATABASE_URL,
    protocol: "postgres",
    port: 5432,
    host: config.host,
-   logging: true
+   logging: console.log(),
+	 sslmode: prefer,
 });
 
 const Users = sequelize.define('users', {
