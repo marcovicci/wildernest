@@ -1,0 +1,19 @@
+{
+  "name": "wildernestbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.22.0",
+    "sequelize": "^6.5.1",
+    "sqlite": "^4.0.19",
+    "sqlite3": "^5.0.2"
+  }
+}
