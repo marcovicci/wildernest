@@ -104,12 +104,12 @@ function UserCreate(commanderName, verifyDiscordID) {
       //if there's a name but no ID, just add the ID in
       if (!existingUser.discordID) {
         existingUser.discordID = verifyDiscordID;
-        await existingUser.save();
+        existingUser.save();
         return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`);
       }
       else if (!existingUser.username) {
         existingUser.username = commanderName;
-        await existingUser.save();
+        existingUser.save();
         return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`);
       }
       //the user is just already in the system
