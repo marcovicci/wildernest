@@ -1,4 +1,22 @@
 {
+	"development": {
+    "username": "",
+    "password": "",
+    "database": "late_file",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "",
+    "password": "",
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "use_env_variable": "DATABASE_URL",
+    "dialect": "postgres"
+  },
 	"prefix": "!",
 	"token": "ODIwODAwMDY4OTQ3OTM1MzAz.YE6bog.KAJnZ4xtCi2ZD479DP27ODHG74k",
 	"database": "d3n23v8vksn42a",
