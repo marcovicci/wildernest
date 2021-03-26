@@ -18,7 +18,7 @@ const sequelize = new Sequelize('database', 'username', 'password', {
 	dialect: 'sqlite',
 	logging: false,
 	// SQLite only
-	storage: 'wildernest.db',
+	storage: 'DATABASE_URL',
 });
 
 const Users = sequelize.define('users', {
