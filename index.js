@@ -6,7 +6,7 @@ const Discord = require('discord.js');
 const Sequelize = require('sequelize');
 
 const client = new Discord.Client();
-const PREFIX = '~Wildernest';
+const PREFIX = process.env.PREFIX;
 
 /*
  * Make sure you are on at least version 5 of Sequelize! Version 4 as used in this guide will pose a security threat.
@@ -149,4 +149,4 @@ client.on('message', async message => {
 	}
 });
 
-client.login(token);
+client.login(process.env.TOKEN);
