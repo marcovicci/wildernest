@@ -37,12 +37,13 @@ disclient.on('message', message => {
       //in lieu of a sophisticated event handler i just have this block leading to some functions
       if (command === 'i\'m') UserCreate(message, args, verifyDiscordID);
       else if (command === 'pets') PetsCreate(message, args, verifyDiscordID);
+      else if (command === 'hi') HelloPet(message, args, verifyDiscordID);
     }
 });
 
 //async functions are the best for my purposes - being able to 'try' reading and writing to the SQL database was essential
 async function UserCreate(message, commanderName, verifyDiscordID) {
-  sql.connect();
+  await sql.connect();
 	try {
     const sel = await sql.query(`SELECT userid, username FROM users WHERE username = ${commanderName} OR discordid = ${verifyDiscordID}`);
     //getting just the user ID val from this query
@@ -103,7 +104,7 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
 }
 
 async function PetsCreate(message, args, verifyDiscordID) {
-  sql.connect();
+  await sql.connect();
   //check if we know this user already
   console.log(verifyDiscordID);
   try {
@@ -116,13 +117,14 @@ async function PetsCreate(message, args, verifyDiscordID) {
     if (!args.length) {
       //if no arguments let's fetch their Pets
         try {
-          const sel = await sql.query(`SELECT petid FROM pets WHERE ownerid = ${checkUsers}`);
+          const sel = await sql.query(`SELECT petname FROM pets WHERE ownerid = ${checkUsers}`);
           const checkPets = [];
           for (i = 0; i < sel.rows.length; i++) {
-            checkPets.push(sel.rows[i].petid);
+            checkPets.push(sel.rows[i].petname);
           }
           console.log('pets are ' + checkPets);
-          return message.reply(`You have some pets alright. (I'll be able to list them out later.)`);
+          return message.reply(`You have some pets alright: ${checkPets} Say **~WN hi** and then a pet name to see one.`);
+
         } catch(err) {
           console.log('No pets: ' + err)
           //no pets, let's tell them they can make one
@@ -178,6 +180,59 @@ async function PetsCreate(message, args, verifyDiscordID) {
       return message.reply(`Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
     }
   sql.end();
+}
+
+async function HelloPet(message, args, verifyDiscordID) {
+  await sql.connect();
+
+  //check this user
+  try {
+    const sel = await sql.query(`SELECT userid FROM users WHERE discordid = ${verifyDiscordID}`);
+    //getting just the user ID val from this query
+    const checkUsers = sel.rows[0].userid;
+
+    if (!args.length) {
+      //if no arguments
+        return message.reply(`Hi! Were you trying to say hi to a pet? Make sure you include the pet name, like **~WN hi Bo** or something.`);
+    } else {
+      //if they included a pet name, let's see if it exists
+      try {
+        const sel = await sql.query(`SELECT petname, petid, color, species, ownerid FROM pets WHERE petname = ${args[0]}`);
+
+        //if so, we can build an embed!
+        //but let's also have different behavior if you own the pet
+        if (checkUsers === sel.rows[0].ownerid) {
+          const petEmbed= new Discord.MessageEmbed()
+                .setColor('#0099ff')
+                .setTitle(`${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`)
+                .setAuthor(`Pet #${sel.rows[0].petid} @ WilderNest', 'https://i.imgur.com/wSTFkRM.png`, 'http://wilderne.st')
+                .setImage('http://wilderne.st/bird_green_happy.png')
+                .addField('Regular field title', 'Some value here')
+                .setFooter(`${sel.rows[0].petname} recognizes their owner and looks delighted!`);
+          //todo - reactions to interact with pet as owner
+        } else {
+          const petEmbed = new Discord.MessageEmbed()
+                .setColor('#0099ff')
+                .setTitle(`${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`)
+                .setAuthor(`Pet #${sel.rows[0].petid} @ WilderNest', 'https://i.imgur.com/wSTFkRM.png`, 'http://wilderne.st')
+                .setImage('http://wilderne.st/bird_green.png')
+                .addField('Regular field title', 'Some value here')
+                .setFooter(`${sel.rows[0].petname} is not your pet, but they're still cute.`);
+          //todo - ability to "like" pet as non owner
+        }
+        channel.send(exampleEmbed);
+
+      } catch(err) {
+        //pet doesn't exist
+        console.log('Couldn\'t find pet: ' + err)
+        return message.reply(`I can't find a pet by the name ${args[0]}, sorry!`);
+      }
+    }
+  } catch(err) {
+    //we dont knwo this guy
+    console.log('Couldn\'t find user: ' + err)
+    return message.reply(`Hi! Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
+  }
 }
 
 disclient.login(process.env.TOKEN);
