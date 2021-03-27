@@ -116,7 +116,11 @@ async function PetsCreate(message, args, verifyDiscordID) {
     if (!args.length) {
       //if no arguments let's fetch their Pets
         try {
-          const checkPets = await sql.query(`SELECT petname FROM pets WHERE ownerid = ${checkUsers}`);
+          const sel = await sql.query(`SELECT petid FROM pets WHERE ownerid = ${checkUsers}`);
+          const checkPets = [];
+          for (i = 0; i < sel.rows.length; i++) {
+            checkPets.append(rows[i].petid);
+          }
           console.log('pets are ' + checkPets);
           return message.reply(`You have some pets alright. (I'll be able to list them out later.)`);
         } catch(err) {
