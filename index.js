@@ -28,7 +28,7 @@ client.on('message', msg => {
 
 function UserCreate(commanderName, verifyDiscordID) {
 
-	const checkUsers = await sql`SELECT userid FROM users WHERE username = ${commanderName} OR discordid = ${verifyDiscordID}`;
+	const checkUsers = sql`SELECT userid FROM users WHERE username = ${commanderName} OR discordid = ${verifyDiscordID}`;
 	if (!checkUsers) {
 		//There's no existing user ID for this name or discord account so let's make one.
 		const newUser = [{
@@ -45,7 +45,7 @@ function UserCreate(commanderName, verifyDiscordID) {
 	} else {
 		console.log(checkUsers);
 		//There is a user ID for this already, so let's do some more stuff.
-		const matchDiscord = await sql`SELECT discordid FROM users WHERE userid = checkUsers`
+		const matchDiscord = sql`SELECT discordid FROM users WHERE userid = checkUsers`
 		//Let's check if the discord account matches.
 		if (!matchDiscord) {
 			//Well, there's no discord ID. For now, we'll just let them write theirs in.
@@ -65,7 +65,7 @@ function UserCreate(commanderName, verifyDiscordID) {
 			return message.reply(`Sorry - I already know a ${commanderName} and their Discord ID is ${matchDiscord}, yours is ${verifyDiscordID}!`);
 		} else {
 			//Discord ID matches. Cool. So, do you have a username already?
-			const matchUsername = await sql`SELECT username FROM users WHERE userid = checkUsers`
+			const matchUsername = sql`SELECT username FROM users WHERE userid = checkUsers`
 			if (!matchUsername) {
 				//nope
 				const user = {
