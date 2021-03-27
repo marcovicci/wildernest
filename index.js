@@ -13,8 +13,6 @@ const sql = new Client({
   }
 });
 
-sql.connect();
-
 disclient.on('message', msg => {
     if (!msg.content.startsWith(process.env.PREFIX) || !msg.guild) return;
     const command = msg.content.split(' ')[0].substr(process.env.PREFIX.length);
@@ -24,7 +22,7 @@ disclient.on('message', msg => {
 });
 
 function UserCreate(commanderName, verifyDiscordID) {
-
+  sql.connect();
 	const checkUsers = sql`SELECT userid FROM users WHERE username = ${commanderName} OR discordid = ${verifyDiscordID}`;
 	if (!checkUsers) {
 		//There's no existing user ID for this name or discord account so let's make one.
@@ -39,6 +37,7 @@ function UserCreate(commanderName, verifyDiscordID) {
 		  }
 		`
 		return message.reply(`Thanks, ${commanderName}! I made you a new account, with user ID ${checkUsers} and Discord ID ${verifyDiscordID}.`);
+    sql.end();
 	} else {
 		console.log(checkUsers);
 		//There is a user ID for this already, so let's do some more stuff.
@@ -57,9 +56,11 @@ function UserCreate(commanderName, verifyDiscordID) {
 		    id = ${ user.id }
 			`
 			return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`);
+      sql.end();
 		} else if (matchDiscord != verifyDiscordID) {
 			//This isn't your account, let's just yell at you.
 			return message.reply(`Sorry - I already know a ${commanderName} and their Discord ID is ${matchDiscord}, yours is ${verifyDiscordID}!`);
+      sql.end();
 		} else {
 			//Discord ID matches. Cool. So, do you have a username already?
 			const matchUsername = sql`SELECT username FROM users WHERE userid = checkUsers`
@@ -76,9 +77,11 @@ function UserCreate(commanderName, verifyDiscordID) {
 			    id = ${ user.id }
 				`
 				return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`);
+        sql.end();
 			}
 			else {
 				return message.reply(`Hi ${matchUsername}. You're already in my system, with the correct ID of ${verifyDiscordID}. Thanks for checking.`);
+        sql.end();
 			}
 		}
 	}
