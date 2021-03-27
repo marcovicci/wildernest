@@ -190,9 +190,9 @@ async function HelloPet(message, args, verifyDiscordID) {
         return message.reply(`Hi! Were you trying to say hi to a pet? Make sure you include the pet name, like **~WN hi Bo** or something.`);
     } else {
       //if they included a pet name, let's see if it exists
-      const myPetName = `${args[0]}`
+      const myPetName = `'${args[0]}'`
       try {
-        const sel = await sql.query(`SELECT petname, petid, color, species, ownerid FROM pets WHERE petname = ${myPetName}`);
+        const sel = await sql.query(`SELECT * FROM pets WHERE petname = ${myPetName}`);
 
         //if so, we can build an embed!
         //but let's also have different behavior if you own the pet
