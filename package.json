@@ -1,5 +1,5 @@
 {
-  "name": "WilderNest Bot",
+  "name": "WilderNestBot",
   "version": "1.0.0",
   "description": "An experimental design to interact with a virtual pet website using social media APIs.",
   "main": "index.js",
