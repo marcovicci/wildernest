@@ -43,8 +43,8 @@ function UserCreate(commanderName, verifyDiscordID) {
 		    sql(newUser, 'username', 'discordid')
 		  }
 		`
-		return message.reply(`Thanks, ${commanderName}! I made you a new account, with user ID ${checkUsers} and Discord ID ${verifyDiscordID}.`);
     sql.end();
+    return message.reply(`Thanks, ${commanderName}! I made you a new account, with user ID ${checkUsers} and Discord ID ${verifyDiscordID}.`);
 	} else {
 		console.log(checkUsers);
 		//There is a user ID for this already, so let's do some more stuff.
@@ -62,12 +62,12 @@ function UserCreate(commanderName, verifyDiscordID) {
 		  } where
 		    id = ${ user.id }
 			`
-			return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`);
       sql.end();
+			return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`);
 		} else if (matchDiscord != verifyDiscordID) {
 			//This isn't your account, let's just yell at you.
-			return message.reply(`Sorry - I already know a ${commanderName} and their Discord ID is ${matchDiscord}, yours is ${verifyDiscordID}!`);
       sql.end();
+			return message.reply(`Sorry - I already know a ${commanderName} and their Discord ID is ${matchDiscord}, yours is ${verifyDiscordID}!`);
 		} else {
 			//Discord ID matches. Cool. So, do you have a username already?
 			const matchUsername = sql`SELECT username FROM users WHERE userid = checkUsers`
@@ -83,12 +83,12 @@ function UserCreate(commanderName, verifyDiscordID) {
 			  } where
 			    id = ${ user.id }
 				`
-				return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`);
         sql.end();
+				return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`);
 			}
 			else {
-				return message.reply(`Hi ${matchUsername}. You're already in my system, with the correct ID of ${verifyDiscordID}. Thanks for checking.`);
         sql.end();
+				return message.reply(`Hi ${matchUsername}. You're already in my system, with the correct ID of ${verifyDiscordID}. Thanks for checking.`);
 			}
 		}
 	}
