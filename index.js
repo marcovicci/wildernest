@@ -19,13 +19,14 @@ disclient.once('ready', () => {
 
 disclient.on('message', msg => {
     console.log(msg);
-    if (!msg.content.startsWith(process.env.PREFIX)) return;
-    const command = msg.content.split(' ')[0].substr(process.env.PREFIX.length);
-    const args = msg.content.split(' ').slice(1).join(' ');
-    console.log(command);
-    console.log(args);
-    if (command === 'I\'m') UserCreate(args, message.author.id);
-    //else if (command === 'Pets') UserCreate(message.author.id);
+    if (msg.content.startsWith(process.env.PREFIX)) {
+      const command = msg.content.split(' ')[0].substr(process.env.PREFIX.length);
+      const args = msg.content.split(' ').slice(1).join(' ');
+      console.log(command);
+      console.log(args);
+      if (command === 'I\'m') UserCreate(args, message.author.id);
+      //else if (command === 'Pets') UserCreate(message.author.id);
+    }
 });
 
 function UserCreate(commanderName, verifyDiscordID) {
