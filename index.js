@@ -20,8 +20,8 @@ disclient.once('ready', () => {
 disclient.on('message', msg => {
     console.log('msg is ' + msg.content);
     if (msg.content.startsWith(process.env.PREFIX)) {
-      const command = msg.content.split(' ')[0].substr(process.env.PREFIX.length);
-      const args = msg.content.split(' ').slice(1).join(' ');
+      const args = message.content.slice(process.env.PREFIX.length).trim().split(' ');
+      const command = args.shift().toLowerCase();
       console.log('cmd is ' + command);
       console.log('args is ' + args);
       if (command === 'I\'m') UserCreate(args, message.author.id);
