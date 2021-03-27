@@ -4,14 +4,16 @@ const Sequelize = require('sequelize');
 const config = require('./config/config.json');
 const client = new Discord.Client();
 
-const { Postgres } = require('pg');
+const { postgres } = require('pg');
 
-const sql = Postgres({
+const sql = postgres({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }
 });
+
+module.exports = sql;
 
 client.on('ready', () => {
     client.user.setActivity('carefully', {type: 'WATCHING'});
