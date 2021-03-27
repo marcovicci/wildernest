@@ -74,7 +74,7 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
   		`);
       return message.reply(`Thanks, ${commanderName}! I made you a new account, with Discord ID ${verifyDiscordID}.`);
     } catch(err) {
-      console.log('Creating one failed... eek: 'err);
+      console.log('Creating one failed... eek: '+ err);
       return message.reply(`Sorry... I'm kinda freaking out. I hope Zelle is checking my logs.`);
     }
 
