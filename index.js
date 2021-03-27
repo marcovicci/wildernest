@@ -25,7 +25,7 @@ disclient.on('message', message => {
       console.log('cmd is ' + command);
       console.log('args is ' + args);
       if (command === 'i\'m') UserCreate(message, args, message.author.id);
-      //else if (command === 'Pets') PetsCreate(message, args, message.author.id);
+      else if (command === 'pets') PetsCreate(message, args, message.author.id);
     }
 });
 
