@@ -69,7 +69,7 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
   		//There's no existing user ID for this name or discord account so let's make one.
   	try {
       await sql.query(`
-  		  INSERT INTO users ('username', 'discordid')
+  		  INSERT INTO users (username, discordid)
           VALUES ('${commanderName}', '${verifyDiscordID}')
   		`);
       return message.reply(`Thanks, ${commanderName}! I made you a new account, with Discord ID ${verifyDiscordID}.`);
