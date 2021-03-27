@@ -22,10 +22,11 @@ disclient.on('message', message => {
     if (message.content.startsWith(process.env.PREFIX)) {
       const args = message.content.slice(process.env.PREFIX.length).trim().split(' ');
       const command = args.shift().toLowerCase();
+      const verifyDiscordID = String(message.author.id);
       console.log('cmd is ' + command);
       console.log('args is ' + args);
-      if (command === 'i\'m') UserCreate(message, args, message.author.id);
-      else if (command === 'pets') PetsCreate(message, args, message.author.id);
+      if (command === 'i\'m') UserCreate(message, args, verifyDiscordID);
+      else if (command === 'pets') PetsCreate(message, args, verifyDiscordID);
     }
 });
 
