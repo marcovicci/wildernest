@@ -178,13 +178,9 @@ async function PetsCreate(message, args, verifyDiscordID) {
 }
 
 async function HelloPet(message, args, verifyDiscordID) {
-
-  //this is a more complex command with multiple tables, so we're going to try using clients instead of pool.query
-  const client = await sql.connect();
-
   //check this users
   try {
-    const sel = await client.query(`SELECT userid FROM users WHERE discordid = ${verifyDiscordID}`);
+    const sel = await sql.query(`SELECT userid FROM users WHERE discordid = ${verifyDiscordID}`);
     //getting just the user ID val from this query
     const checkUsers = sel.rows[0].userid;
     if (!args.length) {
@@ -192,15 +188,17 @@ async function HelloPet(message, args, verifyDiscordID) {
         return message.reply(`Hi! Were you trying to say hi to a pet? Make sure you include the pet name, like **~WN hi Bo** or something.`);
     } else {
       //if they included a pet name, let's see if it exists
-      const myPetName = `${args[0]}`
+      const myPetName = `'${args[0]}'`
       try {
-        client.release();
-        const sel = await client.query(`SELECT * FROM pets WHERE petname = ${myPetName}`);
+
+        //let's make sure we release the client after the previous query, since it was in a different table
+        const sel = await sql.query(`SELECT * FROM pets WHERE petname = ${myPetName}`);
+        console.log(sel);
 
         //if so, we can build an embed!
         //but let's also have different behavior if you own the pet
         if (checkUsers === sel.rows[0].ownerid) {
-          const petEmbed= new Discord.MessageEmbed()
+          const petEmbed = new Discord.MessageEmbed()
                 .setColor('#0099ff')
                 .setTitle(`${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`)
                 .setAuthor(`Pet #${sel.rows[0].petid} @ WilderNest', 'https://i.imgur.com/wSTFkRM.png`, 'http://wilderne.st')
@@ -230,8 +228,6 @@ async function HelloPet(message, args, verifyDiscordID) {
     //we dont knwo this guy
     console.log('Couldn\'t find user: ' + err)
     return message.reply(`Hi! Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
-  } finally {
-    client.release();
   }
 }
 
