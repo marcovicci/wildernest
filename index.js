@@ -29,9 +29,9 @@ disclient.on('message', message => {
     }
 });
 
-function UserCreate(message, commanderName, verifyDiscordID) {
+async function UserCreate(message, commanderName, verifyDiscordID) {
   sql.connect();
-	const checkUsers = sql.query(`SELECT userid FROM users WHERE username = ${commanderName} OR discordid = ${verifyDiscordID}`);
+	const checkUsers = await sql.query(`SELECT userid FROM users WHERE username = ${commanderName} OR discordid = ${verifyDiscordID}`);
 	if (!checkUsers) {
 		//There's no existing user ID for this name or discord account so let's make one.
 		const newUser = [{
@@ -39,17 +39,17 @@ function UserCreate(message, commanderName, verifyDiscordID) {
 	  discordid: verifyDiscordID
 		}]
 
-		sql.query(`
+		await sql.query(`
 		  insert into users ${
 		    sql(newUser, 'username', 'discordid')
 		  }
 		`);
-    sql.end();
+
     return message.reply(`Thanks, ${commanderName}! I made you a new account, with user ID ${checkUsers} and Discord ID ${verifyDiscordID}.`);
 	} else {
 		console.log(checkUsers);
 		//There is a user ID for this already, so let's do some more stuff.
-		const matchDiscord = sql.query(`SELECT discordid FROM users WHERE userid = ${checkUsers}`);
+		const matchDiscord = await sql.query(`SELECT discordid FROM users WHERE userid = ${checkUsers}`);
 		//Let's check if the discord account matches.
 		if (!matchDiscord) {
 			//Well, there's no discord ID. For now, we'll just let them write theirs in.
@@ -57,42 +57,43 @@ function UserCreate(message, commanderName, verifyDiscordID) {
 		  id: checkUsers,
 		  discordid: verifyDiscordID
 			}
-			sql.query(`
+			await sql.query(`
 		  update users set ${
 		    sql(user, 'discordid')
 		  } where
 		    id = ${ user.id }
 			`);
-      sql.end();
+
 			return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`);
 		} else if (matchDiscord != verifyDiscordID) {
 			//This isn't your account, let's just yell at you.
-      sql.end();
+
 			return message.reply(`Sorry - I already know a ${commanderName} and their Discord ID is ${matchDiscord}, yours is ${verifyDiscordID}!`);
 		} else {
 			//Discord ID matches. Cool. So, do you have a username already?
-			const matchUsername = sql.query(`SELECT username FROM users WHERE userid = ${checkUsers}`);
+			const matchUsername = await sql.query(`SELECT username FROM users WHERE userid = ${checkUsers}`);
 			if (!matchUsername) {
 				//nope
 				const user = {
 			  id: checkUsers,
 			  username: matchUsername
 				}
-				sql.query(`
+				await sql.query(`
 			  update users set ${
 			    sql(user, 'username')
 			  } where
 			    id = ${ user.id }
 				`);
-        sql.end();
+
 				return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`);
 			}
 			else {
-        sql.end();
+
 				return message.reply(`Hi ${matchUsername}. You're already in my system, with the correct ID of ${verifyDiscordID}. Thanks for checking.`);
 			}
 		}
 	}
+  sql.end();
 }
 
 disclient.login(process.env.TOKEN);
