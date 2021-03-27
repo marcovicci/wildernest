@@ -31,8 +31,8 @@ disclient.on('message', message => {
       const verifyDiscordID = `'${message.author.id}'`;
 
       //this helped me with a lot of bug testing
-      //console.log('cmd is ' + command);
-      //console.log('args is ' + args);
+      console.log('cmd is ' + command);
+      console.log('args is ' + args);
 
       //in lieu of a sophisticated event handler i just have this block leading to some functions
       if (command === 'i\'m') UserCreate(message, args, verifyDiscordID);
@@ -191,7 +191,7 @@ async function HelloPet(message, args, verifyDiscordID) {
     } else {
       //if they included a pet name, let's see if it exists
       try {
-        const sel = await sql.query(`SELECT petname, petid, color, species, ownerid FROM pets WHERE "petname" = ${args[0]}`);
+        const sel = await sql.query(`SELECT petname, petid, color, species, ownerid FROM pets WHERE petname = '${args[0]}'`);
 
         //if so, we can build an embed!
         //but let's also have different behavior if you own the pet
