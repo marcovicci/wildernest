@@ -25,7 +25,7 @@ disclient.on('message', message => {
       console.log('cmd is ' + command);
       console.log('args is ' + args);
       if (command === 'i\'m') UserCreate(message, args, message.author.id);
-      //else if (command === 'Pets') UserCreate(message.author.id);
+      //else if (command === 'Pets') PetsCreate(message, args, message.author.id);
     }
 });
 
@@ -80,6 +80,71 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
 
   }
   sql.end();
+}
+
+async function PetsCreate(message, args, verifyDiscordID) {
+  sql.connect();
+  //check if we know this user
+  try {
+    const checkUsers = await sql.query(`SELECT userid FROM users WHERE discordid = ${verifyDiscordID}`);
+    //we know this guy, let's execute the command
+
+    if (!args.length) {
+      //if no arguments let's fetch their Pets first off
+        try {
+          const checkPets = await sql.query(`SELECT * FROM pets WHERE ownerid = ${checkUsers}`);
+          console.log('pets are ' + checkPets);
+          return message.reply(`You have some pets alright. (I'll be able to list them out later.)`);
+        } catch(err) {
+          //no pets, let's tell them they can make one
+          return message.reply(`Hey, you actually don't have any pets. Try **~WN pets make** followed by the pet name you want.`);
+        }
+    }
+    else if (args[0] === 'make') {
+      //let's try to make a new pet!
+      //but first, let's make sure the user has room
+      try {
+        const currentPets = await sql.query(`SELECT totalpets FROM users WHERE userid = ${checkUsers}`);
+        const allowedPets = await sql.query(`SELECT allowedpets FROM users WHERE userid = ${checkUsers}`);
+        if (allowedPets > currentPets) {
+          //we can make a pet!
+          try {
+            await sql.query(`
+        		  INSERT INTO pets (petname, ownerid)
+                VALUES ('${args[1]}', '${checkUsers}')
+        		`);
+
+            //if that worked, let's also update the current pets for that user
+            try {
+              await sql.query(`
+        		  UPDATE users SET totalpets = totalpets + 1
+              WHERE userid = ${checkUsers}
+        			`);
+            } catch(err) {
+              //why didn't that work? let's see
+              console.log('Couldn\'t increment pet values... ' + err)
+              return message.reply(`Sorry... I'm kinda freaking out. I hope Zelle is checking my logs.`);
+            }
+          } catch(err) {
+            //pet name was probably taken
+            console.log('Couldn\'t make this pet... ' + err)
+            return message.reply(`I wasn't able to create that pet. I'll have better error responding soon.`);
+          }
+
+        } else {
+          //pets are full
+          return message.reply(`Hey, you're only allowed to have ${allowedPets} pets and you already have ${currentPets} pets. Try **~WN pets** to see them.`);
+        }
+      } catch(err) {
+        console.log('Failed to fetch current pets and allowed pets: ' + err);
+        return message.reply(`Sorry... I'm kinda freaking out. I hope Zelle is checking my logs.`);
+      }
+    }
+
+    } catch(err) {
+      //we dont knwo this guy
+      return message.reply(`Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
+    }
 }
 
 disclient.login(process.env.TOKEN);
