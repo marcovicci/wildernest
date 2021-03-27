@@ -98,9 +98,9 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
       console.log('Creating one failed... eek: '+ err);
       return message.reply(`Sorry... I'm kinda freaking out. I hope Zelle is checking my logs.`);
     }
-
+  } finally {
+    await sql.end();
   }
-  await sql.end();
 }
 
 async function PetsCreate(message, args, verifyDiscordID) {
@@ -178,8 +178,9 @@ async function PetsCreate(message, args, verifyDiscordID) {
       //we dont knwo this guy
       console.log('Couldn\'t find user: ' + err)
       return message.reply(`Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
+    } finally {
+      await sql.end();
     }
-  await sql.end();
 }
 
 async function HelloPet(message, args, verifyDiscordID) {
@@ -232,8 +233,9 @@ async function HelloPet(message, args, verifyDiscordID) {
     //we dont knwo this guy
     console.log('Couldn\'t find user: ' + err)
     return message.reply(`Hi! Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
+  } finally {
+    await sql.end();
   }
-  await sql.end();
 }
 
 disclient.login(process.env.TOKEN);
