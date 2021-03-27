@@ -13,12 +13,16 @@ const sql = new Client({
   }
 });
 
+disclient.once('ready', () => {
+	console.log('hewwo');
+});
+
 disclient.on('message', msg => {
-    if (!msg.content.startsWith(process.env.PREFIX) || !msg.guild) return;
+    if (!msg.content.startsWith(process.env.PREFIX)) return;
     const command = msg.content.split(' ')[0].substr(process.env.PREFIX.length);
     const args = msg.content.split(' ').slice(1).join(' ');
     if (command === 'I\'m') UserCreate(args, message.author.id);
-    else if (command === 'Pets') UserCreate(message.author.id);
+    //else if (command === 'Pets') UserCreate(message.author.id);
 });
 
 function UserCreate(commanderName, verifyDiscordID) {
