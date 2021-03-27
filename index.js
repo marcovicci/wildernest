@@ -18,12 +18,12 @@ disclient.once('ready', () => {
 });
 
 disclient.on('message', msg => {
-    console.log(msg);
+    console.log('msg is ' + msg.content);
     if (msg.content.startsWith(process.env.PREFIX)) {
       const command = msg.content.split(' ')[0].substr(process.env.PREFIX.length);
       const args = msg.content.split(' ').slice(1).join(' ');
-      console.log(command);
-      console.log(args);
+      console.log('cmd is ' + command);
+      console.log('args is ' + args);
       if (command === 'I\'m') UserCreate(args, message.author.id);
       //else if (command === 'Pets') UserCreate(message.author.id);
     }
