@@ -233,6 +233,7 @@ async function HelloPet(message, args, verifyDiscordID) {
     console.log('Couldn\'t find user: ' + err)
     return message.reply(`Hi! Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
   }
+  sql.end();
 }
 
 disclient.login(process.env.TOKEN);
