@@ -28,7 +28,7 @@ disclient.on('message', message => {
       const command = args.shift().toLowerCase();
 
       //keep the discord ID of the person who sent this message - we'll need it for basically all commands!
-      const verifyDiscordID = message.sender.id;
+      const verifyDiscordID = `'${message.author.id}'`;
 
       //this helped me with a lot of bug testing
       //console.log('cmd is ' + command);
