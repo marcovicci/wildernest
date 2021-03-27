@@ -17,10 +17,10 @@ disclient.once('ready', () => {
 	console.log('hewwo');
 });
 
-disclient.on('message', msg => {
-    console.log('msg is ' + msg.content);
-    if (msg.content.startsWith(process.env.PREFIX)) {
-      const args = msg.content.slice(process.env.PREFIX.length).trim().split(' ');
+disclient.on('message', message => {
+    //console.log('message is ' + message.content);
+    if (message.content.startsWith(process.env.PREFIX)) {
+      const args = message.content.slice(process.env.PREFIX.length).trim().split(' ');
       const command = args.shift().toLowerCase();
       console.log('cmd is ' + command);
       console.log('args is ' + args);
