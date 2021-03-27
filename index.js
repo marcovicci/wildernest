@@ -4,9 +4,9 @@ const disclient = new Discord.Client();
 
 //Config file and postgreSQL client setup
 const config = require('./config/config.json');
-const { Client } = require('pg');
+const { Pool } = require('pg');
 
-const sql = new Client({
+const sql = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
@@ -43,7 +43,6 @@ disclient.on('message', message => {
 
 //async functions are the best for my purposes - being able to 'try' reading and writing to the SQL database was essential
 async function UserCreate(message, commanderName, verifyDiscordID) {
-  await sql.connect();
 	try {
     const sel = await sql.query(`SELECT userid, username FROM users WHERE username = ${commanderName} OR discordid = ${verifyDiscordID}`);
     //getting just the user ID val from this query
@@ -98,8 +97,6 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
       console.log('Creating one failed... eek: '+ err);
       return message.reply(`Sorry... I'm kinda freaking out. I hope Zelle is checking my logs.`);
     }
-  } finally {
-    await sql.end();
   }
 }
 
@@ -178,14 +175,10 @@ async function PetsCreate(message, args, verifyDiscordID) {
       //we dont knwo this guy
       console.log('Couldn\'t find user: ' + err)
       return message.reply(`Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
-    } finally {
-      await sql.end();
     }
 }
 
 async function HelloPet(message, args, verifyDiscordID) {
-  await sql.connect();
-
   //check this users
   try {
     const sel = await sql.query(`SELECT userid FROM users WHERE discordid = ${verifyDiscordID}`);
@@ -233,8 +226,6 @@ async function HelloPet(message, args, verifyDiscordID) {
     //we dont knwo this guy
     console.log('Couldn\'t find user: ' + err)
     return message.reply(`Hi! Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
-  } finally {
-    await sql.end();
   }
 }
 
