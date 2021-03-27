@@ -178,9 +178,13 @@ async function PetsCreate(message, args, verifyDiscordID) {
 }
 
 async function HelloPet(message, args, verifyDiscordID) {
+
+  //this is a more complex command with multiple tables, so we're going to try using clients instead of pool.query
+  const client = await sql.connect();
+
   //check this users
   try {
-    const sel = await sql.query(`SELECT userid FROM users WHERE discordid = ${verifyDiscordID}`);
+    const sel = await client.query(`SELECT userid FROM users WHERE discordid = ${verifyDiscordID}`);
     //getting just the user ID val from this query
     const checkUsers = sel.rows[0].userid;
     if (!args.length) {
@@ -191,9 +195,7 @@ async function HelloPet(message, args, verifyDiscordID) {
       const myPetName = `${args[0]}`
       try {
 
-        //let's make sure we release the client after the previous query, since it was in a different table
-        await client.release();
-        const sel = await sql.query(`SELECT * FROM pets WHERE petname = ${myPetName}`);
+        const sel = await client.query(`SELECT * FROM pets WHERE petname = ${myPetName}`);
 
         //if so, we can build an embed!
         //but let's also have different behavior if you own the pet
@@ -217,9 +219,6 @@ async function HelloPet(message, args, verifyDiscordID) {
           //todo - ability to "like" pet as non owner
         }
         channel.send(exampleEmbed);
-        //and release again - i'm honestly not certain if i should be releasing following every single query or not
-        //pools are weird
-        await client.release();
 
       } catch(err) {
         //pet doesn't exist
@@ -231,6 +230,8 @@ async function HelloPet(message, args, verifyDiscordID) {
     //we dont knwo this guy
     console.log('Couldn\'t find user: ' + err)
     return message.reply(`Hi! Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
+  } finally {
+    client.release();
   }
 }
 
