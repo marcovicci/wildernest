@@ -88,6 +88,7 @@ async function PetsCreate(message, args, verifyDiscordID) {
   //check if we know this user
   try {
     const checkUsers = await sql.query(`SELECT userid FROM users WHERE discordid = ${verifyDiscordID}`);
+    console.log(checkUsers);
     //we know this guy, let's execute the command
 
     if (!args.length) {
