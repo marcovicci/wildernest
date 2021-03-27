@@ -8,6 +8,7 @@ const sql = require('./db.js')
 
 client.on('ready', () => {
     client.user.setActivity('carefully', {type: 'WATCHING'});
+    sql.connect();
   	console.log('hewwo')
 });
 
