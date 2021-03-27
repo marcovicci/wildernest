@@ -149,6 +149,7 @@ async function PetsCreate(message, args, verifyDiscordID) {
         		  UPDATE users SET totalpets = totalpets + 1
               WHERE userid = ${checkUsers}
         			`);
+              return message.reply(`Nice. I made you a pet named ${args[1]}.`);
             } catch(err) {
               //why didn't that work? let's see
               console.log('Couldn\'t increment pet values... ' + err)
