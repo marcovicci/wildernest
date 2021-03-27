@@ -101,7 +101,6 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
 }
 
 async function PetsCreate(message, args, verifyDiscordID) {
-  await sql.connect();
   //check if we know this user already
   console.log(verifyDiscordID);
   try {
@@ -184,14 +183,16 @@ async function HelloPet(message, args, verifyDiscordID) {
     const sel = await sql.query(`SELECT userid FROM users WHERE discordid = ${verifyDiscordID}`);
     //getting just the user ID val from this query
     const checkUsers = sel.rows[0].userid;
-
     if (!args.length) {
       //if no arguments
         return message.reply(`Hi! Were you trying to say hi to a pet? Make sure you include the pet name, like **~WN hi Bo** or something.`);
     } else {
       //if they included a pet name, let's see if it exists
-      const myPetName = `'${args[0]}'`
+      const myPetName = `${args[0]}`
       try {
+
+        //let's make sure we release the client after the previous query, since it was in a different table
+        await sql.release();
         const sel = await sql.query(`SELECT * FROM pets WHERE petname = ${myPetName}`);
 
         //if so, we can build an embed!
@@ -216,6 +217,9 @@ async function HelloPet(message, args, verifyDiscordID) {
           //todo - ability to "like" pet as non owner
         }
         channel.send(exampleEmbed);
+        //and release again - i'm honestly not certain if i should be releasing following every single query or not
+        //pools are weird
+        await sql.release();
 
       } catch(err) {
         //pet doesn't exist
