@@ -2,17 +2,20 @@
 const Discord = require('discord.js');
 const Sequelize = require('sequelize');
 const config = require('./config/config.json');
-const client = new Discord.Client();
+const discclient = new Discord.Client();
 
-const sql = require('./db.js')
+const { Client } = require('pg');
 
-client.on('ready', () => {
-    client.user.setActivity('carefully', {type: 'WATCHING'});
-    sql.connect();
-  	console.log('hewwo')
+const sql = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
-client.on('message', msg => {
+sql.connect();
+
+disclient.on('message', msg => {
     if (!msg.content.startsWith(process.env.PREFIX) || !msg.guild) return;
     const command = msg.content.split(' ')[0].substr(process.env.PREFIX.length);
     const args = msg.content.split(' ').slice(1).join(' ');
@@ -81,4 +84,4 @@ function UserCreate(commanderName, verifyDiscordID) {
 	}
 }
 
-client.login(process.env.TOKEN);
+disclient.login(process.env.TOKEN);
