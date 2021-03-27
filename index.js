@@ -191,14 +191,13 @@ async function HelloPet(message, args, verifyDiscordID) {
       const myPetName = `'${args[0]}'`
       try {
 
-        //let's make sure we release the client after the previous query, since it was in a different table
         const sel = await sql.query(`SELECT * FROM pets WHERE petname = ${myPetName}`);
         console.log(sel);
 
         //if so, we can build an embed!
         //but let's also have different behavior if you own the pet
         if (checkUsers === sel.rows[0].ownerid) {
-          const petEmbed = new Discord.MessageEmbed()
+          const petEmbed = new disclient.MessageEmbed()
                 .setColor('#0099ff')
                 .setTitle(`${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`)
                 .setAuthor(`Pet #${sel.rows[0].petid} @ WilderNest', 'https://i.imgur.com/wSTFkRM.png`, 'http://wilderne.st')
@@ -207,7 +206,7 @@ async function HelloPet(message, args, verifyDiscordID) {
                 .setFooter(`${sel.rows[0].petname} recognizes their owner and looks delighted!`);
           //todo - reactions to interact with pet as owner
         } else {
-          const petEmbed = new Discord.MessageEmbed()
+          const petEmbed = new disclient.MessageEmbed()
                 .setColor('#0099ff')
                 .setTitle(`${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`)
                 .setAuthor(`Pet #${sel.rows[0].petid} @ WilderNest', 'https://i.imgur.com/wSTFkRM.png`, 'http://wilderne.st')
