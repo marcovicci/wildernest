@@ -34,58 +34,48 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
 	try {
     const checkUsers = await sql.query(`SELECT userid FROM users WHERE username = ${commanderName} OR discordid = ${verifyDiscordID}`);
 
-  		console.log(checkUsers);
+  		console.log('user id exists as ' + checkUsers);
   		//There is a user ID for this already, so let's do some more stuff.
-  		const matchDiscord = await sql.query(`SELECT discordid FROM users WHERE userid = ${checkUsers}`);
-  		//Let's check if the discord account matches.
-  		if (!matchDiscord) {
+  		try {
+        const matchDiscord = await sql.query(`SELECT discordid FROM users WHERE userid = ${checkUsers}`);
+        //Let's check if the discord account matches.
+        if (matchDiscord != verifyDiscordID) {
+          console.log('desired discord ID is ' + matchDiscord);
+    			//This isn't your account, let's just yell at you.
+    			return message.reply(`Sorry - I already know a ${commanderName} and their Discord ID is ${matchDiscord}, yours is ${verifyDiscordID}!`);
+        } else {
+    			//Discord ID matches. Cool. So, do you have a username already?
+          try { const matchUsername = await sql.query(`SELECT username FROM users WHERE userid = ${checkUsers}`);
+          return message.reply(`Hi ${matchUsername}. You're already in my system, with the correct ID of ${verifyDiscordID}. Thanks for checking.`);
+          } catch(err) { //nope, no username
+          console.log('No username found so we give you a new one.');
+           await sql.query(`
+     		   UPDATE users SET username = ${commanderName}
+           WHERE userid = ${checkUsers}
+     			`);
+           return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`); }
+        }
+      } catch(err) {
   			//Well, there's no discord ID. For now, we'll just let them write theirs in.
-  			const user = {
-  		  id: checkUsers,
-  		  discordid: verifyDiscordID
-  			}
+        console.log('No discord ID found so we will write yours in.');
   			await sql.query(`
-  		  update users set ${
-  		    sql(user, 'discordid')
-  		  } where
-  		    id = ${ user.id }
+  		  UPDATE users SET discordid = ${verifyDiscordID}
+        WHERE userid = ${checkUsers}
   			`);
-
   			return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`);
-  		} else if (matchDiscord != verifyDiscordID) {
-  			//This isn't your account, let's just yell at you.
-
-  			return message.reply(`Sorry - I already know a ${commanderName} and their Discord ID is ${matchDiscord}, yours is ${verifyDiscordID}!`);
-  		} else {
-  			//Discord ID matches. Cool. So, do you have a username already?
-        try { const matchUsername = await sql.query(`SELECT username FROM users WHERE userid = ${checkUsers}`);
-        return message.reply(`Hi ${matchUsername}. You're already in my system, with the correct ID of ${verifyDiscordID}. Thanks for checking.`);
-      } catch(err) { //nope, no username
-       const user = {
-       id: checkUsers,
-       username: matchUsername
-       }
-       await sql.query(`
-       update users set ${
-         sql(user, 'username')
-       } where
-         id = ${ user.id }
-       `);
-
-       return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`); }
-  		}
+      }
   } catch(err) {
-    console.log(err);
+    console.log('No existing user ID or discord account, can we try to create one?');
   		//There's no existing user ID for this name or discord account so let's make one.
   	try {
       await sql.query(`
-  		  INSERT INTO users (username, discordid)
-          VALUES (${commanderName}, ${verifyDiscordID})
+  		  INSERT INTO users ('username', 'discordid')
+          VALUES ('${commanderName}', '${verifyDiscordID}')
   		`);
       return message.reply(`Thanks, ${commanderName}! I made you a new account, with Discord ID ${verifyDiscordID}.`);
     } catch(err) {
-      console.log(err);
-      return message.reply(`I'm kinda freaking out. I hope Zelle is checking my logs.`);
+      console.log('Creating one failed... eek: 'err);
+      return message.reply(`Sorry... I'm kinda freaking out. I hope Zelle is checking my logs.`);
     }
 
   }
