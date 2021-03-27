@@ -44,7 +44,8 @@ disclient.on('message', message => {
 async function UserCreate(message, commanderName, verifyDiscordID) {
   sql.connect();
 	try {
-    const sel = await sql.query(`SELECT userid FROM users WHERE username = ${commanderName} OR discordid = ${verifyDiscordID}`);
+    const sel = await sql.query(`SELECT userid, username FROM users WHERE username = ${commanderName} OR discordid = ${verifyDiscordID}`);
+    //getting just the user ID val from this query
     const checkUsers = sel.rows[0].userid;
 
   		//console.log('user id exists as ' + checkUsers);
@@ -60,7 +61,8 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
     			return message.reply(`Sorry - I already know a ${commanderName} and their Discord ID is ${matchDiscord}, yours is ${verifyDiscordID}!`);
         } else {
     			//Discord ID matches. Cool. So, do you have a username already?
-          try { const matchUsername = await sql.query(`SELECT username FROM users WHERE userid = ${checkUsers}`);
+          try { const sel = await sql.query(`SELECT username FROM users WHERE userid = ${checkUsers}`);
+          const matchUsername = sel.rows[0].username;
           //yes!
           return message.reply(`Hi ${matchUsername}. You're already in my system, with the correct ID of ${verifyDiscordID}. Thanks for checking.`);
           } catch(err) { //nope, no username
@@ -106,6 +108,7 @@ async function PetsCreate(message, args, verifyDiscordID) {
   console.log(verifyDiscordID);
   try {
     const sel = await sql.query(`SELECT userid FROM users WHERE discordid = ${verifyDiscordID}`);
+    //getting just the user ID val from this query
     const checkUsers = sel.rows[0].userid;
     console.log(checkUsers);
     //we know this guy, let's execute the command
@@ -113,7 +116,7 @@ async function PetsCreate(message, args, verifyDiscordID) {
     if (!args.length) {
       //if no arguments let's fetch their Pets
         try {
-          const checkPets = await sql.query(`SELECT * FROM pets WHERE ownerid = ${checkUsers}`);
+          const checkPets = await sql.query(`SELECT petname FROM pets WHERE ownerid = ${checkUsers}`);
           console.log('pets are ' + checkPets);
           return message.reply(`You have some pets alright. (I'll be able to list them out later.)`);
         } catch(err) {
@@ -125,8 +128,9 @@ async function PetsCreate(message, args, verifyDiscordID) {
       //let's try to make a new pet!
       //but first, let's make sure the user has room
       try {
-        const currentPets = await sql.query(`SELECT totalpets FROM users WHERE userid = ${checkUsers}`);
-        const allowedPets = await sql.query(`SELECT allowedpets FROM users WHERE userid = ${checkUsers}`);
+        const sel = await sql.query(`SELECT totalpets, allowedpets FROM users WHERE userid = ${checkUsers}`);
+        const allowedPets = sel.rows[0].allowedpets;
+        const currentPets = sel.rows[0].totalpets;
         if (allowedPets > currentPets) {
           //we can make a pet!
           try {
