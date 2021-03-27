@@ -2,7 +2,7 @@
 const Discord = require('discord.js');
 const Sequelize = require('sequelize');
 const config = require('./config/config.json');
-const discclient = new Discord.Client();
+const disclient = new Discord.Client();
 
 const { Client } = require('pg');
 
