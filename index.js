@@ -6,7 +6,7 @@ const client = new Discord.Client();
 
 const { Postgres } = require('pg');
 
-const sql = new Postgres({
+const sql = Postgres({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
