@@ -192,7 +192,7 @@ async function HelloPet(message, args, verifyDiscordID) {
       try {
 
         //let's make sure we release the client after the previous query, since it was in a different table
-        await sql.release();
+        await client.release();
         const sel = await sql.query(`SELECT * FROM pets WHERE petname = ${myPetName}`);
 
         //if so, we can build an embed!
@@ -219,7 +219,7 @@ async function HelloPet(message, args, verifyDiscordID) {
         channel.send(exampleEmbed);
         //and release again - i'm honestly not certain if i should be releasing following every single query or not
         //pools are weird
-        await sql.release();
+        await client.release();
 
       } catch(err) {
         //pet doesn't exist
