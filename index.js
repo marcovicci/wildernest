@@ -140,7 +140,7 @@ async function PetsCreate(message, args, verifyDiscordID) {
           try {
             await sql.query(`
         		  INSERT INTO pets (petname, ownerid)
-                VALUES ('${args[1]}', '${checkUsers}')
+                VALUES ('${args[1]}', ${checkUsers})
         		`);
 
             //if that worked, let's also update the current pets for that user
@@ -191,7 +191,7 @@ async function HelloPet(message, args, verifyDiscordID) {
     } else {
       //if they included a pet name, let's see if it exists
       try {
-        const sel = await sql.query(`SELECT petname, petid, color, species, ownerid FROM pets WHERE petname = ${args[0]}`);
+        const sel = await sql.query(`SELECT petname, petid, color, species, ownerid FROM pets WHERE petname = '${args[0]}'`);
 
         //if so, we can build an embed!
         //but let's also have different behavior if you own the pet
