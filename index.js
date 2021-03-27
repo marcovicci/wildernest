@@ -24,12 +24,12 @@ disclient.on('message', message => {
       const command = args.shift().toLowerCase();
       console.log('cmd is ' + command);
       console.log('args is ' + args);
-      if (command === 'i\'m') UserCreate(args, message.author.id);
+      if (command === 'i\'m') UserCreate(message, args, message.author.id);
       //else if (command === 'Pets') UserCreate(message.author.id);
     }
 });
 
-function UserCreate(commanderName, verifyDiscordID) {
+function UserCreate(message, commanderName, verifyDiscordID) {
   sql.connect();
 	const checkUsers = sql.query(`SELECT userid FROM users WHERE username = ${commanderName} OR discordid = ${verifyDiscordID}`);
 	if (!checkUsers) {
