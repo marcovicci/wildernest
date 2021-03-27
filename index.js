@@ -100,7 +100,7 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
     }
 
   }
-  sql.end();
+  await sql.end();
 }
 
 async function PetsCreate(message, args, verifyDiscordID) {
@@ -179,13 +179,13 @@ async function PetsCreate(message, args, verifyDiscordID) {
       console.log('Couldn\'t find user: ' + err)
       return message.reply(`Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
     }
-  sql.end();
+  await sql.end();
 }
 
 async function HelloPet(message, args, verifyDiscordID) {
   await sql.connect();
 
-  //check this user
+  //check this users
   try {
     const sel = await sql.query(`SELECT userid FROM users WHERE discordid = ${verifyDiscordID}`);
     //getting just the user ID val from this query
@@ -206,7 +206,7 @@ async function HelloPet(message, args, verifyDiscordID) {
                 .setColor('#0099ff')
                 .setTitle(`${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`)
                 .setAuthor(`Pet #${sel.rows[0].petid} @ WilderNest', 'https://i.imgur.com/wSTFkRM.png`, 'http://wilderne.st')
-                .setImage('http://wilderne.st/bird_green_happy.png')
+                .setImage('http://wilderne.st/bird_green.png')
                 .addField('Regular field title', 'Some value here')
                 .setFooter(`${sel.rows[0].petname} recognizes their owner and looks delighted!`);
           //todo - reactions to interact with pet as owner
@@ -233,7 +233,7 @@ async function HelloPet(message, args, verifyDiscordID) {
     console.log('Couldn\'t find user: ' + err)
     return message.reply(`Hi! Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
   }
-  sql.end();
+  await sql.end();
 }
 
 disclient.login(process.env.TOKEN);
