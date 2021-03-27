@@ -143,8 +143,10 @@ async function PetsCreate(message, args, verifyDiscordID) {
 
     } catch(err) {
       //we dont knwo this guy
+      console.log('Couldn\'t find user: ' + err)
       return message.reply(`Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
     }
+  sql.end();
 }
 
 disclient.login(process.env.TOKEN);
