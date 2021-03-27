@@ -194,7 +194,7 @@ async function HelloPet(message, args, verifyDiscordID) {
       //if they included a pet name, let's see if it exists
       const myPetName = `${args[0]}`
       try {
-
+        client.release();
         const sel = await client.query(`SELECT * FROM pets WHERE petname = ${myPetName}`);
 
         //if so, we can build an embed!
