@@ -124,6 +124,7 @@ async function PetsCreate(message, args, verifyDiscordID) {
           console.log('pets are ' + checkPets);
           return message.reply(`You have some pets alright. (I'll be able to list them out later.)`);
         } catch(err) {
+          console.log('No pets: ' + err)
           //no pets, let's tell them they can make one
           return message.reply(`Hey, you actually don't have any pets. Try **~WN pets make** followed by the pet name you want.`);
         }
