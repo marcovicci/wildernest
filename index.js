@@ -119,7 +119,7 @@ async function PetsCreate(message, args, verifyDiscordID) {
           const sel = await sql.query(`SELECT petid FROM pets WHERE ownerid = ${checkUsers}`);
           const checkPets = [];
           for (i = 0; i < sel.rows.length; i++) {
-            checkPets.append(sel.rows[i].petid);
+            checkPets.push(sel.rows[i].petid);
           }
           console.log('pets are ' + checkPets);
           return message.reply(`You have some pets alright. (I'll be able to list them out later.)`);
