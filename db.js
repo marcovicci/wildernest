@@ -1,4 +1,4 @@
-const postgres = require('postgres')
+const postgres = require('pg');
 
 const sql = postgres({
   connectionString: process.env.DATABASE_URL,
