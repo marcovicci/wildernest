@@ -4,7 +4,7 @@ const Sequelize = require('sequelize');
 const config = require('./config/config.json');
 const client = new Discord.Client();
 
-const { postgres } = require('pg');
+const postgres = require('pg');
 
 const sql = postgres({
   connectionString: process.env.DATABASE_URL,
