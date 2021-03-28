@@ -45,14 +45,15 @@ disclient.on('message', message => {
 //this function is actually still buggy,
 async function UserCreate(message, commanderName, verifyDiscordID) {
 	try {
-    const sel = await sql.query(`SELECT * FROM users WHERE username = '${commanderName}' OR discordid = ${verifyDiscordID}`);
+    const sel = await sql.query(`SELECT userid FROM users WHERE username = '${commanderName}' OR discordid = ${verifyDiscordID}`);
     //getting just the user ID val from this query
     const checkUsers = sel.rows[0].userid;
 
   		//console.log('user id exists as ' + checkUsers);
   		//If this check succeeds there is a user ID for this already, so let's do some more stuff.
   		try {
-        const matchDiscord = await sql.query(`SELECT discordid FROM users WHERE userid = ${checkUsers}`);
+        const sel = await sql.query(`SELECT discordid FROM users WHERE userid = ${checkUsers}`);
+        const matchDiscord = sel.rows[0].discordid;
 
         //Let's check if the discord account matches.
         if (matchDiscord != verifyDiscordID) {
@@ -75,6 +76,7 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
            return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`); }
         }
       } catch(err) {
+        console.log('problem finding discord id: ' + err)
   			//Well, there's no discord ID. For now, we'll just let them write theirs in.
         //In the future, we'll require them to authorize on a web interface.
         //console.log('No discord ID found so we will write yours in.');
