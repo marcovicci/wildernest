@@ -57,3 +57,5 @@ Also, lots more pets, games, etc. Hopefully, ones you can use from *anywhere*.
 Pets are (and will continue to be) drawn by the talented [Bo Moore](http://bomoore.net/).
 
 Huge thanks to https://discordjs.guide/ and https://www.heroku.com/ for playing so nicely together.
+
+![](http://www.wilderne.st/poster.png)
