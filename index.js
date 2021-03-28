@@ -212,7 +212,9 @@ async function HelloPet(message, args, verifyDiscordID) {
 
 async function BuildPetEmbed(message, sel, checkUsers) {
 
-  const loveTimes = 0;
+  //create pet image
+  const petIMG = new Discord.MessageAttachment('./bird_green.png');
+  const petIMG_happy = new Discord.MessageAttachment('./bird_green_happy.png');
 
   //build embed object
   const petEmbed = {
@@ -223,25 +225,25 @@ async function BuildPetEmbed(message, sel, checkUsers) {
 		url: 'http://wilderne.st',
 	},
   image: {
-		url: 'http://www.wilderne.st/bird_green.png',
+		url: 'attachment://bird_green.png',
 	},
 	footer: {
 		text: `${sel.rows[0].petname} is waiting patiently for love. Press the heart react to pat them.`,
 	},
   };
-  let ownMsg = await message.reply({ embed: petEmbed });
+  let ownMsg = await message.reply({ files: [petIMG], embed: petEmbed });
   ownMsg.react('❤️');
 
   const filter = (reaction) => {
   	return reaction.emoji.name === '❤️';
   };
 
-  ownMsg.awaitReactions(filter, { max: 50, time: 1200000, errors: ['time'] })
+  ownMsg.awaitReactions(filter, { max: 50, time: 30000, errors: ['time'] })
   	.then(collected =>
       {
         petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat! (Love received: ${collected.size})`;
-        petEmbed.image.url = 'http://www.wilderne.st/bird_green_happy.png';
-        ownMsg.edit(petEmbed);
+        petEmbed.image.url = 'attachment://bird_green_happy.png';
+        ownMsg.edit({ files: [petIMG_happy], embed: petEmbed });
       })
   	.catch(collected => {
   		console.log(`Collected ${collected.size} items`);
