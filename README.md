@@ -24,9 +24,7 @@ It turns out it's totally possible to make that happen, due to the magic of APIs
 ## ok, so what is this?
 
 This is a Discord bot made using node.js, discord.js and postgreSQL.
-It's up and running on the Heroku platform **right now** and it can be invited into your discord groups.
-
-https://discord.com/oauth2/authorize?client_id=820800068947935303&scope=bot
+It's up and running on the Heroku platform **right now** and it can be [invited into your discord groups](https://discord.com/oauth2/authorize?client_id=820800068947935303&scope=bot) as long as you have the right permissions!.
 
 Although the WilderNest bot is a work in progress, there are a few commands that work already.
 

@@ -2,8 +2,7 @@
 const Discord = require('discord.js');
 const disclient = new Discord.Client();
 
-//Config file and postgreSQL client setup
-const config = require('./config/config.json');
+//postgreSQL client setup
 const { Pool } = require('pg');
 
 const sql = new Pool({
@@ -20,7 +19,7 @@ disclient.once('ready', () => {
 
 //On a new message in a channel the bot has access to...
 disclient.on('message', message => {
-    //it only cares abiut messages if they begin with its prefix value I set up on Heroku
+    //it only cares about messages if they begin with its prefix value I set up on Heroku
     if (message.content.startsWith(process.env.PREFIX)) {
 
       //split the message into arguments and commands
@@ -28,6 +27,7 @@ disclient.on('message', message => {
       const command = args.shift().toLowerCase();
 
       //keep the discord ID of the person who sent this message - we'll need it for basically all commands!
+      //fun fact, if i don't wrap this in single quotes, JS interprets it as a big int and causes me problems later
       const verifyDiscordID = `'${message.author.id}'`;
 
       //this helped me with a lot of bug testing
@@ -42,9 +42,10 @@ disclient.on('message', message => {
 });
 
 //async functions are the best for my purposes - being able to 'try' reading and writing to the SQL database was essential
+//this function is actually still buggy,
 async function UserCreate(message, commanderName, verifyDiscordID) {
 	try {
-    const sel = await sql.query(`SELECT userid, username FROM users WHERE username = ${commanderName} OR discordid = ${verifyDiscordID}`);
+    const sel = await sql.query(`SELECT * FROM users WHERE username = '${commanderName}' OR discordid = ${verifyDiscordID}`);
     //getting just the user ID val from this query
     const checkUsers = sel.rows[0].userid;
 
@@ -84,6 +85,7 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
   			return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`);
       }
   } catch(err) {
+    console.log('problem finding user: ' + err)
     //console.log('No existing user ID or discord account, can we try to create one?');
   	//There's no existing user ID for this name or discord account so let's make one.
   	try {
@@ -218,8 +220,12 @@ async function BuildPetEmbed(message, sel, checkUsers) {
 	title: `${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`,
 	author: {
 		name: `Pet #${sel.rows[0].petid} @ WilderNest`,
+    //when there is a web interface, this url will change for pet IDs
 		url: 'http://wilderne.st',
 	},
+  //by including the happy and normal pet images as attachments and hiding one in the footer,
+  //i can swap between them without disrupting the embed appearance
+  //when there are more types of pets, i can use the same color variable above in these image URL names!
   files: [{
     attachment:'./bird_green.png',
     name:'normal.png'
@@ -236,16 +242,21 @@ async function BuildPetEmbed(message, sel, checkUsers) {
     icon_url: 'attachment://happy.png',
 	},
   };
+  //this causes the bot to add a heart to its own message once the embed is sent
+  //using message reply is harmless here (embeds do not cause a ping) and ensures it's sent in the right channel
   let ownMsg = await message.reply({ embed: petEmbed });
   ownMsg.react('❤️');
 
+  //discord.js has its own framework for collecting reactions, which i use here
   const filter = (reaction, user) => {
+    //this filter only responds to hear reactions, and only if they're not sent by the bot itself
   	return reaction.emoji.name === '❤️' && user.id != process.env.MY_ID;
   };
 
   const collector = ownMsg.createReactionCollector(filter, { time: 30000 });
 
   collector.on('collect', (reaction, user) => {
+    //updates pet footer and images, then edits the embed, whenever a react is added
     petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat!`;
     petEmbed.image.url = 'attachment://happy.png';
     petEmbed.footer.icon_url = 'attachment://normal.png';
@@ -253,7 +264,8 @@ async function BuildPetEmbed(message, sel, checkUsers) {
   });
 
   collector.on('end', collected => {
-    petEmbed.footer.text = `${sel.rows[0].petname} enjoyed ${collected.size} pats in 30 seconds.`;
+    //final update after the collection timeout of 30 seconds
+    petEmbed.footer.text = `${sel.rows[0].petname} enjoyed ${collected.size} pat(s) in 30 seconds.`;
     petEmbed.image.url = 'attachment://normal.png';
     petEmbed.footer.icon_url = 'attachment://happy.png';
     ownMsg.edit({ embed: petEmbed });
