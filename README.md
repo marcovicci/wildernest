@@ -21,6 +21,12 @@ https://discord.com/oauth2/authorize?client_id=820800068947935303&scope=bot
 Although the WilderNest bot is a work in progress, there are a few commands that work already.
 
 `~WN I'm Bob` will create a user under the name Bob with your discord ID attached.
+
 `~WN Pets` will list your current pets. (Probably none.)
+
 `~WN Pet make Susan` will create a pet named Susan, with you as their owner.
-`~WN hi Susan` will allow you to see a picture of your pet.  
+
+`~WN hi Susan` will allow you to see a picture of your pet. You can press the heart react to pet it.
+
+Right now, the default pet looks like this:
+![A green bird](http://www.wilderne.st/bird_green.png)

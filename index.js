@@ -234,7 +234,7 @@ async function BuildPetEmbed(message, sel, checkUsers) {
   let ownMsg = await message.reply({ files: [petIMG], embed: petEmbed });
   ownMsg.react('❤️');
 
-  const filter = (reaction => {
+  const filter = (reaction) => {
   	return reaction.emoji.name === '❤️';
   };
 
