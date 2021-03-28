@@ -232,7 +232,7 @@ function BuildPetEmbed(message, sel, checkUsers) {
           .setFooter(`${sel.rows[0].petname} is not your pet, but they're still cute.`);
     //todo - ability to "like" pet as non owner
   }
-  //return message.reply(petEmbed);
+  return message.reply(petEmbed);
 }
 
 disclient.login(process.env.TOKEN);
