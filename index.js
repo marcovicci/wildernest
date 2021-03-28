@@ -212,8 +212,6 @@ async function HelloPet(message, args, verifyDiscordID) {
 
 function BuildPetEmbed(message, sel, checkUsers) {
 
-channel.send({ embed: exampleEmbed });
-
   //let's have different behavior if you own the pet
   if (checkUsers === sel.rows[0].ownerid) {
     const petEmbed = new Discord.MessageEmbed()
