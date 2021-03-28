@@ -192,7 +192,7 @@ async function HelloPet(message, args, verifyDiscordID) {
       try {
 
         const sel = await sql.query(`SELECT * FROM pets WHERE petname = ${myPetName}`);
-        console.log(sel);
+        //console.log(sel);
 
         //if so, we can build an embed!
         BuildPetEmbed(message, sel, checkUsers)
@@ -234,21 +234,23 @@ async function BuildPetEmbed(message, sel, checkUsers) {
   let ownMsg = await message.reply({ files: [petIMG], embed: petEmbed });
   ownMsg.react('❤️');
 
-  const filter = (reaction) => {
-  	return ['❤️'].includes(reaction.emoji.name);
+  const filter = (reaction => {
+  	return reaction.emoji.name === '❤️';
   };
 
-  ownMsg.awaitReactions(filter, { max: 10, time: 60000, errors: ['time'] })
-  	.then(collected => {
-  		if (collected.emoji.name === '❤️') {
-        petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat! (Love received: ${collected.size} in 15 seconds)`;
-        petEmbed.image.url = 'attachment://bird_green_happy.png';
-        ownMsg.edit({ files: [petIMG_happy], embed: petEmbed });
-  		}
-  	})
-  	.catch(collected => {
-  		console.log('They reacted with something else.')
-  	});
+  const collector = ownMsg.createReactionCollector(filter, { time: 30000 });
+
+  collector.on('collect', (reaction) => {
+    petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat!`;
+    petEmbed.image.url = 'attachment://bird_green_happy.png';
+    ownMsg.edit({ files: [petIMG_happy], embed: petEmbed });
+  });
+
+  collector.on('end', collected => {
+    petEmbed.footer.text = `${sel.rows[0].petname} enjoyed ${collected.size} pats in 30 seconds.`;
+    petEmbed.image.url = 'attachment://bird_green.png';
+    ownMsg.edit({ files: [petIMG], embed: petEmbed });
+  });
 
 }
 
