@@ -212,10 +212,6 @@ async function HelloPet(message, args, verifyDiscordID) {
 
 async function BuildPetEmbed(message, sel, checkUsers) {
 
-  //create pet image
-  const petIMG = new Discord.MessageAttachment('./bird_green.png');
-  const petIMG_happy = new Discord.MessageAttachment('./bird_green_happy.png');
-
   //build embed object
   const petEmbed = {
 	color: 0x0099ff,
@@ -224,14 +220,22 @@ async function BuildPetEmbed(message, sel, checkUsers) {
 		name: `Pet #${sel.rows[0].petid} @ WilderNest`,
 		url: 'http://wilderne.st',
 	},
+  files: [{
+    attachment:'./bird_green.png',
+    name:'normal.png'
+  },
+  {
+    attachment:'./bird_green_happy.png',
+    name:'happy.png'
+  }],
   image: {
-		url: 'attachment://bird_green.png',
+		url: 'attachment://normal.png',
 	},
 	footer: {
 		text: `${sel.rows[0].petname} is waiting patiently for love. Press the heart react to pat them.`,
 	},
   };
-  let ownMsg = await message.reply({ files: [petIMG], embed: petEmbed });
+  let ownMsg = await message.reply({ embed: petEmbed });
   ownMsg.react('❤️');
 
   const filter = (reaction, user) => {
@@ -242,14 +246,14 @@ async function BuildPetEmbed(message, sel, checkUsers) {
 
   collector.on('collect', (reaction, user) => {
     petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat!`;
-    petEmbed.image.url = 'attachment://bird_green_happy.png';
-    ownMsg.edit({ files: [petIMG_happy], embed: petEmbed });
+    petEmbed.image.url = 'attachment://happy.png';
+    ownMsg.edit({ embed: petEmbed });
   });
 
   collector.on('end', collected => {
     petEmbed.footer.text = `${sel.rows[0].petname} enjoyed ${collected.size} pats in 30 seconds.`;
-    petEmbed.image.url = 'attachment://bird_green.png';
-    ownMsg.edit({ files: [petIMG], embed: petEmbed });
+    petEmbed.image.url = 'attachment://normal.png';
+    ownMsg.edit({ embed: petEmbed });
   });
 
 }
