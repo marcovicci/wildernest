@@ -233,21 +233,17 @@ async function BuildPetEmbed(message, sel, checkUsers) {
   ownMsg.react('❤️');
 
   const filter = (reaction) => {
-	return reaction.emoji.name === '❤️';
+  	return reaction.emoji.name === '❤️';
   };
 
-const collector = ownMsg.createReactionCollector(filter, { time: 15000 });
-
-collector.on('collect', (reaction) => {
-  petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat! (Love received: ${collected.size})`;
-  petEmbed.image.url = 'http://wilderne.st/bird_green_happy.png';
-  msg.edit(petEmbed);
-});
-
-collector.on('end', collected => {
-  console.log(`Collected ${collected.size} items`);
-});
-
+  ownMsg.awaitReactions(filter, { max: 50, time: 1200000, errors: ['time'] })
+  	.then(collected =>
+      petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat! (Love received: ${collected.size})`;
+      petEmbed.image.url = 'http://wilderne.st/bird_green_happy.png';
+      ownMsg.edit(petEmbed);)
+  	.catch(collected => {
+  		console.log(`Collected ${collected.size} items`);
+  	});
 
 }
 
