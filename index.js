@@ -130,7 +130,7 @@ async function PetsCreate(message, args, verifyDiscordID) {
           return message.reply(`Hey, you actually don't have any pets. Try **~WN pets make** followed by the pet name you want.`);
         }
     }
-    else if (args[0] === 'make') {
+    else if (args[0] === 'make' || args[0] === 'create') {
       //let's try to make a new pet!
       //but first, let's make sure the user has room
       try {
@@ -171,6 +171,10 @@ async function PetsCreate(message, args, verifyDiscordID) {
         console.log('Failed to fetch current pets and allowed pets: ' + err);
         return message.reply(`Sorry... I'm kinda freaking out. I hope Zelle is checking my logs.`);
       }
+    }
+
+    else {
+      return message.reply(`I don't understand that command. Try just **~WN pets** instead.`);
     }
 
     } catch(err) {
