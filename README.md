@@ -30,12 +30,10 @@ Although the WilderNest bot is a work in progress, there are a few commands that
 
 `~WN hi Susan` will allow you to see a picture of your pet. You can press the heart react to pet it, which will briefly animate it.
 
-Right now, the default pet looks like this:
+![A screenshot of Discord showing someone sending the command "hi Bo". In response, the bot embeds an image of a green bird and a prompt asking to pet it.](http://www.wilderne.st/example1.png)
 
-![A green bird](http://www.wilderne.st/bird_green.png)
+Currently, petting your pet (hmm... that's going to need different terminology) is just for fun. In the future, it could alter internal affection values.
 
-It looks like this when you pet it:
-
-![A cartoonishly happy green bird with 'love hearts' floating around its head](http://www.wilderne.st/bird_green_happy.png)
+![After being pet, the bird looks cartoonishly happy, with pink hearts swirling around its head.](http://www.wilderne.st/example2.png)
 
 ###what next?
