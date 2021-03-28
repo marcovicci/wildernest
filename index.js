@@ -52,7 +52,7 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
   		//If this check succeeds there is a user ID for this already, so let's do some more stuff.
   		try {
         const sel = await sql.query(`SELECT discordid FROM users WHERE userid = ${checkUsers}`);
-        const matchDiscord = '\'' + sel.rows[0].discordid + '\''};
+        const matchDiscord = '\'' + sel.rows[0].discordid + '\'';
 
         //Let's check if the discord account matches.
         if (matchDiscord != verifyDiscordID) {
