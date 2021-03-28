@@ -234,13 +234,13 @@ async function BuildPetEmbed(message, sel, checkUsers) {
   let ownMsg = await message.reply({ files: [petIMG], embed: petEmbed });
   ownMsg.react('❤️');
 
-  const filter = (reaction) => {
+  const filter = (reaction, user) => {
   	return reaction.emoji.name === '❤️' && user.id != process.env.MY_ID;
   };
 
   const collector = ownMsg.createReactionCollector(filter, { time: 30000 });
 
-  collector.on('collect', (reaction) => {
+  collector.on('collect', (reaction, user) => {
     petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat!`;
     petEmbed.image.url = 'attachment://bird_green_happy.png';
     ownMsg.edit({ files: [petIMG_happy], embed: petEmbed });

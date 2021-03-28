@@ -30,3 +30,6 @@ Although the WilderNest bot is a work in progress, there are a few commands that
 
 Right now, the default pet looks like this:
 ![A green bird](http://www.wilderne.st/bird_green.png)
+
+It looks like this when you pet it:
+![A cartoonishly happy green bird with 'love hearts' floating around its head](http://www.wilderne.st/bird_green_happy.png)
