@@ -212,26 +212,33 @@ async function HelloPet(message, args, verifyDiscordID) {
 
 function BuildPetEmbed(message, sel, checkUsers) {
 
+  //build embed object
+  const petEmbed = {
+	color: 0x0099ff,
+	title: `${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`,
+	author: {
+		name: `Pet #${sel.rows[0].petid} @ WilderNest`,
+		icon_url: 'https://i.imgur.com/wSTFkRM.png',
+		url: 'http://wilderne.st',
+	},
+	fields: [
+		{
+			name: 'Regular field title',
+			value: 'Some value here',
+		},
+	],
+	image: {
+		url: 'http://wilderne.st/bird_green.png',
+	},
+	footer: {
+		text: `${sel.rows[0].petname} is not your pet, but they're still cute.`,
+	},
+  };
+
   //let's have different behavior if you own the pet
   if (checkUsers === sel.rows[0].ownerid) {
-    const petEmbed = new Discord.MessageEmbed()
-          .setColor('#0099ff')
-          .setTitle(`${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`)
-          .setAuthor(`Pet #${sel.rows[0].petid} @ WilderNest`, `https://i.imgur.com/wSTFkRM.png`, `http://wilderne.st`)
-          .setImage('http://wilderne.st/bird_green.png')
-          .addField('Regular field title', 'Some value here')
-          .setFooter(`${sel.rows[0].petname} recognizes their owner and looks delighted!`);
-    //todo - reactions to interact with pet as owner
-  } else {
-    const petEmbed = new Discord.MessageEmbed()
-          .setColor('#0099ff')
-          .setTitle(`${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`)
-          .setAuthor(`Pet #${sel.rows[0].petid} @ WilderNest`, `https://i.imgur.com/wSTFkRM.png`, `http://wilderne.st`)
-          .setImage('http://wilderne.st/bird_green.png')
-          .addField('Regular field title', 'Some value here')
-          .setFooter(`${sel.rows[0].petname} is not your pet, but they're still cute.`);
-    //todo - ability to "like" pet as non owner
-  }
+    petEmbed.footer.text = `${sel.rows[0].petname} recognizes their owner, and looks delighted!`;
+    petEmbed.image.url = 'http://wilderne.st/bird_green_happy.png'; }
   return message.reply({ embed: petEmbed });
 }
 
