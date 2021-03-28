@@ -35,14 +35,13 @@ disclient.on('message', message => {
       console.log('args is ' + args);
 
       //in lieu of a sophisticated event handler i just have this block leading to some functions
-      if (command === 'i\'m') UserCreate(message, args, verifyDiscordID);
+      if (command === 'i\'m' || command === 'im') UserCreate(message, args, verifyDiscordID);
       else if (command === 'pets') PetsCreate(message, args, verifyDiscordID);
       else if (command === 'hi') HelloPet(message, args, verifyDiscordID);
     }
 });
 
 //async functions are the best for my purposes - being able to 'try' reading and writing to the SQL database was essential
-//this function is actually still buggy,
 async function UserCreate(message, commanderName, verifyDiscordID) {
 	try {
     const sel = await sql.query(`SELECT userid FROM users WHERE username = '${commanderName}' OR discordid = ${verifyDiscordID}`);
@@ -53,7 +52,7 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
   		//If this check succeeds there is a user ID for this already, so let's do some more stuff.
   		try {
         const sel = await sql.query(`SELECT discordid FROM users WHERE userid = ${checkUsers}`);
-        const matchDiscord = `'${sel.rows[0].discordid}'`;
+        const matchDiscord = '\'' + sel.rows[0].discordid + '\''};
 
         //Let's check if the discord account matches.
         if (matchDiscord != verifyDiscordID) {
