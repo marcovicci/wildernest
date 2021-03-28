@@ -53,7 +53,7 @@ async function UserCreate(message, commanderName, verifyDiscordID) {
   		//If this check succeeds there is a user ID for this already, so let's do some more stuff.
   		try {
         const sel = await sql.query(`SELECT discordid FROM users WHERE userid = ${checkUsers}`);
-        const matchDiscord = sel.rows[0].discordid;
+        const matchDiscord = `'${sel.rows[0].discordid}'`;
 
         //Let's check if the discord account matches.
         if (matchDiscord != verifyDiscordID) {
@@ -203,8 +203,8 @@ async function HelloPet(message, args, verifyDiscordID) {
 
       } catch(err) {
         //pet doesn't exist
-        console.log(myPetName + ' Couldn\'t find pet: ' + err)
-        return message.reply(`I can't find a pet by the name ${myPetName}, sorry! (or it's the embed still - ignore this - zelle be testing)`);
+        console.log('Couldn\'t find pet: ' + err)
+        return message.reply(`I can't find a pet by the name ${myPetName}, sorry! Maybe you need to make one.`);
       }
     }
   } catch(err) {
