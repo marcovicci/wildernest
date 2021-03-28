@@ -222,7 +222,7 @@ async function BuildPetEmbed(message, sel, checkUsers) {
 		name: `Pet #${sel.rows[0].petid} @ WilderNest`,
 		url: 'http://wilderne.st',
 	},
-	image: {
+  image: {
 		url: 'http://wilderne.st/bird_green.png',
 	},
 	footer: {
