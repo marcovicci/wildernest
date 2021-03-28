@@ -210,7 +210,9 @@ async function HelloPet(message, args, verifyDiscordID) {
   }
 }
 
-function BuildPetEmbed(message, sel, checkUsers) {
+async function BuildPetEmbed(message, sel, checkUsers) {
+
+  const loveTimes = 0;
 
   //build embed object
   const petEmbed = {
@@ -221,25 +223,29 @@ function BuildPetEmbed(message, sel, checkUsers) {
 		icon_url: 'https://i.imgur.com/wSTFkRM.png',
 		url: 'http://wilderne.st',
 	},
-	fields: [
-		{
-			name: 'Regular field title',
-			value: 'Some value here',
-		},
-	],
 	image: {
 		url: 'http://wilderne.st/bird_green.png',
 	},
 	footer: {
-		text: `${sel.rows[0].petname} is not your pet, but they're still cute.`,
+		text: `${sel.rows[0].petname} is waiting patiently for love. Press the heart react to pat them.`,
 	},
   };
+  let ownMsg = await message.reply({ embed: petEmbed });
+  ownMsg.react('❤️');
 
-  //let's have different behavior if you own the pet
-  if (checkUsers === sel.rows[0].ownerid) {
-    petEmbed.footer.text = `${sel.rows[0].petname} recognizes their owner, and looks delighted!`;
-    petEmbed.image.url = 'http://wilderne.st/bird_green_happy.png'; }
-  return message.reply({ embed: petEmbed });
+  const filter = (reaction) => {
+	return ['❤️'].includes(reaction.emoji.name);
+};
+
+ownMsg.awaitReactions(filter, { max: 100, time: 60000, errors: ['time'] })
+	.then(collected => {
+		if (collected.emoji.name === '❤️') {
+      loveTimes ++;
+			petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat! (Love received: ${loveTimes})`;
+      petEmbed.image.url = 'http://wilderne.st/bird_green_happy.png';
+		}
+	});
+
 }
 
 disclient.login(process.env.TOKEN);
