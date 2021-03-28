@@ -220,7 +220,6 @@ async function BuildPetEmbed(message, sel, checkUsers) {
 	title: `${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`,
 	author: {
 		name: `Pet #${sel.rows[0].petid} @ WilderNest`,
-		icon_url: 'https://i.imgur.com/wSTFkRM.png',
 		url: 'http://wilderne.st',
 	},
 	image: {
@@ -234,17 +233,21 @@ async function BuildPetEmbed(message, sel, checkUsers) {
   ownMsg.react('❤️');
 
   const filter = (reaction) => {
-	return ['❤️'].includes(reaction.emoji.name);
-};
+	return reaction.emoji.name === '❤️';
+  };
 
-ownMsg.awaitReactions(filter, { max: 100, time: 60000, errors: ['time'] })
-	.then(collected => {
-		if (collected.emoji.name === '❤️') {
-      loveTimes ++;
-			petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat! (Love received: ${loveTimes})`;
-      petEmbed.image.url = 'http://wilderne.st/bird_green_happy.png';
-		}
-	});
+const collector = ownMsg.createReactionCollector(filter, { time: 15000 });
+
+collector.on('collect', (reaction) => {
+  petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat! (Love received: ${collected.size})`;
+  petEmbed.image.url = 'http://wilderne.st/bird_green_happy.png';
+  msg.edit(petEmbed);
+});
+
+collector.on('end', collected => {
+  console.log(`Collected ${collected.size} items`);
+});
+
 
 }
 
