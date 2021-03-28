@@ -233,6 +233,7 @@ async function BuildPetEmbed(message, sel, checkUsers) {
 	},
 	footer: {
 		text: `${sel.rows[0].petname} is waiting patiently for love. Press the heart react to pat them.`,
+    icon_url: 'attachment://happy.png',
 	},
   };
   let ownMsg = await message.reply({ embed: petEmbed });
@@ -247,12 +248,14 @@ async function BuildPetEmbed(message, sel, checkUsers) {
   collector.on('collect', (reaction, user) => {
     petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat!`;
     petEmbed.image.url = 'attachment://happy.png';
+    petEmbed.footer.icon_url = 'attachment://normal.png';
     ownMsg.edit({ embed: petEmbed });
   });
 
   collector.on('end', collected => {
     petEmbed.footer.text = `${sel.rows[0].petname} enjoyed ${collected.size} pats in 30 seconds.`;
     petEmbed.image.url = 'attachment://normal.png';
+    petEmbed.footer.icon_url = 'attachment://happy.png';
     ownMsg.edit({ embed: petEmbed });
   });
 
