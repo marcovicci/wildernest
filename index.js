@@ -241,7 +241,7 @@ async function BuildPetEmbed(message, sel, checkUsers) {
       {
         petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat! (Love received: ${collected.size})`;
         petEmbed.image.url = 'http://www.wilderne.st/bird_green_happy.png';
-        ownMsg.edit(petEmbed);)
+        ownMsg.edit(petEmbed);
       })
   	.catch(collected => {
   		console.log(`Collected ${collected.size} items`);
