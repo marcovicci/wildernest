@@ -194,14 +194,13 @@ async function HelloPet(message, args, verifyDiscordID) {
         const sel = await sql.query(`SELECT * FROM pets WHERE petname = ${myPetName}`);
         console.log(sel);
 
-        return message.reply(`I found your pet - the actual problem is in the embed building code! Oops!`);
         //if so, we can build an embed!
-        //BuildPetEmbed(message, sel, checkUsers)
+        BuildPetEmbed(message, sel, checkUsers)
 
       } catch(err) {
         //pet doesn't exist
         console.log(myPetName + ' Couldn\'t find pet: ' + err)
-        return message.reply(`I can't find a pet by the name ${myPetName}, sorry!`);
+        return message.reply(`I can't find a pet by the name ${myPetName}, sorry! (or it's the embed still - ignore this - zelle be testing)`);
       }
     }
   } catch(err) {
