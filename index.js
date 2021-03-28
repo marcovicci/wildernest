@@ -15,6 +15,11 @@ const sql = new Pool({
 //Sends to Heroku's console once the bot is ready for interaction
 disclient.once('ready', () => {
 	console.log('hewwo');
+
+  //custom activity
+  disclient.user.setActivity('http://wilderne.st/', { type: 'PLAYING' })
+  .then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
+  .catch(console.error);
 });
 
 //On a new message in a channel the bot has access to...
