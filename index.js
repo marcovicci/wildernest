@@ -223,7 +223,7 @@ async function BuildPetEmbed(message, sel, checkUsers) {
 		url: 'http://wilderne.st',
 	},
   image: {
-		url: 'http://wilderne.st/bird_green.png',
+		url: 'http://www.wilderne.st/bird_green.png',
 	},
 	footer: {
 		text: `${sel.rows[0].petname} is waiting patiently for love. Press the heart react to pat them.`,
@@ -238,9 +238,11 @@ async function BuildPetEmbed(message, sel, checkUsers) {
 
   ownMsg.awaitReactions(filter, { max: 50, time: 1200000, errors: ['time'] })
   	.then(collected =>
-      petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat! (Love received: ${collected.size})`;
-      petEmbed.image.url = 'http://wilderne.st/bird_green_happy.png';
-      ownMsg.edit(petEmbed);)
+      {
+        petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat! (Love received: ${collected.size})`;
+        petEmbed.image.url = 'http://www.wilderne.st/bird_green_happy.png';
+        ownMsg.edit(petEmbed);)
+      })
   	.catch(collected => {
   		console.log(`Collected ${collected.size} items`);
   	});
