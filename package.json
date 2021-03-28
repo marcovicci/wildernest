@@ -13,7 +13,7 @@
   },
   "author": "Zelle Marcovicci",
   "dependencies": {
-    "discord.js": "^11.3.0",
+    "discord.js": "^12.5.1",
     "pg": "^8.5.1",
     "postgres": "^1.0.2",
     "sequelize": "^6.5.1",

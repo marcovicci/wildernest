@@ -15,3 +15,5 @@ Popular in the early internet, virtual pet games (where users create and care fo
 ###ok, so what is this?
 This is a Discord bot made using node.js, discord.js and postgreSQL.
 It's up and running on the Heroku platform **right now** and it can be invited into your discord groups.
+
+https://discord.com/oauth2/authorize?client_id=820800068947935303&scope=bot
