@@ -211,12 +211,15 @@ async function HelloPet(message, args, verifyDiscordID) {
 }
 
 function BuildPetEmbed(message, sel, checkUsers) {
+
+channel.send({ embed: exampleEmbed });
+
   //let's have different behavior if you own the pet
   if (checkUsers === sel.rows[0].ownerid) {
     const petEmbed = new Discord.MessageEmbed()
           .setColor('#0099ff')
           .setTitle(`${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`)
-          .setAuthor(`Pet #${sel.rows[0].petid} @ WilderNest', 'https://i.imgur.com/wSTFkRM.png`, 'http://wilderne.st')
+          .setAuthor(`Pet #${sel.rows[0].petid} @ WilderNest`, `https://i.imgur.com/wSTFkRM.png`, `http://wilderne.st`)
           .setImage('http://wilderne.st/bird_green.png')
           .addField('Regular field title', 'Some value here')
           .setFooter(`${sel.rows[0].petname} recognizes their owner and looks delighted!`);
@@ -225,13 +228,13 @@ function BuildPetEmbed(message, sel, checkUsers) {
     const petEmbed = new Discord.MessageEmbed()
           .setColor('#0099ff')
           .setTitle(`${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`)
-          .setAuthor(`Pet #${sel.rows[0].petid} @ WilderNest', 'https://i.imgur.com/wSTFkRM.png`, 'http://wilderne.st')
+          .setAuthor(`Pet #${sel.rows[0].petid} @ WilderNest`, `https://i.imgur.com/wSTFkRM.png`, `http://wilderne.st`)
           .setImage('http://wilderne.st/bird_green.png')
           .addField('Regular field title', 'Some value here')
           .setFooter(`${sel.rows[0].petname} is not your pet, but they're still cute.`);
     //todo - ability to "like" pet as non owner
   }
-  return message.reply(petEmbed);
+  //return message.reply(petEmbed);
 }
 
 disclient.login(process.env.TOKEN);
