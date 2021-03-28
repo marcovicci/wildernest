@@ -15,8 +15,6 @@
   "dependencies": {
     "discord.js": "^12.5.1",
     "pg": "^8.5.1",
-    "postgres": "^1.0.2",
-    "sequelize": "^6.5.1",
-    "sequelize-cli": "^6.2.0"
+    "postgres": "^1.0.2"
   }
 }

@@ -12,7 +12,7 @@ const sql = new Pool({
   }
 });
 
-//Sends to console once the bot is ready for interaction
+//Sends to Heroku's console once the bot is ready for interaction
 disclient.once('ready', () => {
 	console.log('hewwo');
 });
