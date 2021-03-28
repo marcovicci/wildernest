@@ -235,7 +235,7 @@ async function BuildPetEmbed(message, sel, checkUsers) {
   ownMsg.react('❤️');
 
   const filter = (reaction) => {
-  	return reaction.emoji.name === '❤️';
+  	return reaction.emoji.name === '❤️' && user.id != process.env.MY_ID;
   };
 
   const collector = ownMsg.createReactionCollector(filter, { time: 30000 });
