@@ -9,7 +9,7 @@ A: No, but it should be. Sorry. You can go.
 
 A: Thanks.
 
-##what's wild about the web?
+## what's wild about the web?
 
 People are using it differently than they did when *I* was a tiny baby on the internet.
 
@@ -21,7 +21,7 @@ That's bad news for online games (and probably for you, but don't worry about it
 
 It turns out it's totally possible to make that happen, due to the magic of APIs - which I like to think of as funny little doors carved into the side of basically every website there is, as long as you have the keys. So that's that - I want to make a virtual pet website that, from day 1, is designed to latch onto the APIs of other websites so you can perform the major site functions from wherever you already are.
 
-##ok, so what is this?
+## ok, so what is this?
 
 This is a Discord bot made using node.js, discord.js and postgreSQL.
 It's up and running on the Heroku platform **right now** and it can be invited into your discord groups.
@@ -44,7 +44,7 @@ Currently, petting your pet (hmm... that's going to need different terminology) 
 
 ![After being pet, the bird looks cartoonishly happy, with pink hearts swirling around its head.](http://www.wilderne.st/example2.png)
 
-##what next?
+## what next?
 
 Twitter integration.
 
@@ -54,7 +54,7 @@ Eventually, a web interface (so you can sign up there and use Twitter/Discord's 
 
 Also, lots more pets, games, etc. Hopefully, ones you can use from *anywhere*.
 
-##credits and etcetera
+## credits and etcetera
 
 Pets are (and will continue to be) drawn by the talented [Bo Moore](http://bomoore.net/).
 
