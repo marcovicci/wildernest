@@ -194,8 +194,9 @@ async function HelloPet(message, args, verifyDiscordID) {
         const sel = await sql.query(`SELECT * FROM pets WHERE petname = ${myPetName}`);
         console.log(sel);
 
+        return message.reply(`I found your pet - the actual problem is in the embed building code! Oops!`);
         //if so, we can build an embed!
-        BuildPetEmbed(message, sel, checkUsers)
+        //BuildPetEmbed(message, sel, checkUsers)
 
       } catch(err) {
         //pet doesn't exist
@@ -231,7 +232,7 @@ function BuildPetEmbed(message, sel, checkUsers) {
           .setFooter(`${sel.rows[0].petname} is not your pet, but they're still cute.`);
     //todo - ability to "like" pet as non owner
   }
-  return message.reply(exampleEmbed);
+  return message.reply(petEmbed);
 }
 
 disclient.login(process.env.TOKEN);
