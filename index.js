@@ -12,10 +12,9 @@ const sql = new Pool({
   }
 });
 
-//Sends to Heroku's console once the bot is ready for interaction
+//Sends to my bot spam channel once the bot is ready for interaction
 disclient.once('ready', () => {
-	console.log('hewwo');
-
+  disclient.channels.cache.get(`825620341006008321`).send(`hewwo. I'm back online.`)
   //custom activity
   disclient.user.setActivity('http://wilderne.st/', { type: 'PLAYING' })
   .then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
