@@ -17,6 +17,7 @@ const profanity = process.env.PROFANITY.split(' ');
 
 //Sends to my bot logs channel once the bot is ready for interaction
 disclient.once('ready', () => {
+  console.log(profanity);
   disclient.channels.cache.get(`825934332027469866`).send(`hewwo. I'm back online.`)
   //custom activity
   disclient.user.setActivity('http://wilderne.st/', { type: 'PLAYING' })
@@ -34,6 +35,10 @@ disclient.on('message', message => {
     const args = message.content.slice(process.env.PREFIX.length).trim().split(' ');
     const command = args.shift().toLowerCase();
 
+    //while we're here, profanity checking
+    const swearCheck = message.content.split(' ');
+    console.log(swearCheck);
+
     //keep the discord ID of the person who sent this message - we'll need it for basically all commands!
     //fun fact, if i don't wrap this in single quotes, JS interprets it as a big int and causes me problems later
     const verifyDiscordID = `'${message.author.id}'`;
@@ -50,13 +55,11 @@ disclient.on('message', message => {
 
     //but let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
     for (i = 0; i < profanity.length; i++) {
-      console.log(`${message.guild.id}`);
-      console.log(`825594271993954315`);
-      if (message.content.includes(profanity[i]) && `'${message.guild.id}'` === '825594271993954315' && `'${message.author.id}'` != process.env.MY_ID){
+      if (swearCheck.includes(profanity[i]) && `'${message.guild.id}'` === '825594271993954315' && `'${message.author.id}'` != process.env.MY_ID){
         message.delete();
         disclient.channels.cache.get(`825934332027469866`).send('message contained this bad word: ' + profanity[i]);
         return;
-      }} 
+      }}
 });
 
 //async functions are the best for my purposes - being able to 'try' reading and writing to the SQL database was essential
