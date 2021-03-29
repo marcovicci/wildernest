@@ -27,7 +27,7 @@ disclient.on('message', message => {
     //let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
       for (i = 0; i < process.env.PROFANITY.length; i++) {
         if (!message.guild.id == '825594271993954315') return; //only in my server pls
-        if (message.includes(process.env.PROFANITY[i])){
+        if (message.content.includes(process.env.PROFANITY[i])){
           message.delete();
           return;
       }}
