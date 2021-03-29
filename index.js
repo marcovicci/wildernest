@@ -35,6 +35,7 @@ disclient.on('message', message => {
   //keep the discord ID of the person who sent this message - we'll need it for basically all commands!
   //fun fact, if i don't wrap this in single quotes, JS interprets it as a big int and causes me problems later
   const verifyDiscordID = `'${message.author.id}'`;
+  console.log(verifyDiscordID, process.env.MY_ID);
 
   //only cares about messages if they begin with its prefix value I set up on Heroku
   if (message.content.startsWith(process.env.PREFIX)) {
