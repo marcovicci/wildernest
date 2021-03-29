@@ -29,7 +29,9 @@ disclient.once('ready', () => {
 disclient.on('message', message => {
 
   //profanity checking function - strips out punctuation so swear, ...swear and s.wear are all caught as words
-  const swearCheck = message.content.match(/[^_\W]+/g);
+  //we actually join this and then split it again, so that it can still do word by word matching (it's faster!)
+  const noPunct = message.content.match(/[^_\W]+/g).join(' ');
+  const swearCheck = noPunct.split(' ');
   console.log(swearCheck);
 
   //keep the discord ID of the person who sent this message - we'll need it for basically all commands!
@@ -53,10 +55,10 @@ disclient.on('message', message => {
     //and if i include it BEFORE the if block, the "return" prevents the if block from triggering!
     //todo: refactor this later
     if (`'${message.guild.id}'` === `'${process.env.HOME_GUILD}'` && `'${message.author.id}'` != `'${process.env.MY_ID}'`){
-      for (i = 0; i < profanity.length; i++) {
-        if (swearCheck.includes(profanity[i])) {
+      for (i = 0; i < swearCheck.length; i++) {
+        if (profanity.includes(swearCheck[i])) {
           message.delete();
-          disclient.channels.cache.get(`825934332027469866`).send(`message "${message.content}" from ${message.author} in channel ${message.channel} contained this bad word: ${profanity[i]}`);
+          disclient.channels.cache.get(`825934332027469866`).send(`message "${message.content}" from ${message.author} in channel ${message.channel} contained this bad word: ${swearCheck[i]}`);
           return;
         }}
     }
@@ -71,10 +73,10 @@ disclient.on('message', message => {
     //and if i include it BEFORE the if block, the "return" prevents the if block from triggering!
     //todo: refactor this later
     if (`'${message.guild.id}'` === `'${process.env.HOME_GUILD}'` && `'${message.author.id}'` != `'${process.env.MY_ID}'`){
-      for (i = 0; i < profanity.length; i++) {
-        if (swearCheck.includes(profanity[i])) {
+      for (i = 0; i < swearCheck.length; i++) {
+        if (profanity.includes(swearCheck[i])) {
           message.delete();
-          disclient.channels.cache.get(`825934332027469866`).send(`message "${message.content}" from ${message.author} in channel ${message.channel} contained this bad word: ${profanity[i]}`);
+          disclient.channels.cache.get(`825934332027469866`).send(`message "${message.content}" from ${message.author} in channel ${message.channel} contained this bad word: ${swearCheck[i]}`);
           return;
         }}
     }
