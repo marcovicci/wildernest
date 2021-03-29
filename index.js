@@ -28,16 +28,16 @@ disclient.once('ready', () => {
 //On a new message in a channel the bot has access to...
 disclient.on('message', message => {
 
+  //profanity checking
+  const swearCheck = message.content.split(' ');
+  console.log(swearCheck);
+
   //only cares about messages if they begin with its prefix value I set up on Heroku
   if (message.content.startsWith(process.env.PREFIX)) {
 
     //split the message into arguments and commands
     const args = message.content.slice(process.env.PREFIX.length).trim().split(' ');
     const command = args.shift().toLowerCase();
-
-    //while we're here, profanity checking
-    const swearCheck = message.content.split(' ');
-    console.log(swearCheck);
 
     //keep the discord ID of the person who sent this message - we'll need it for basically all commands!
     //fun fact, if i don't wrap this in single quotes, JS interprets it as a big int and causes me problems later
