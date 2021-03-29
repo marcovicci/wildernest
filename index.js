@@ -28,11 +28,8 @@ disclient.once('ready', () => {
 //On a new message in a channel the bot has access to...
 disclient.on('message', message => {
 
-  //profanity checking function - strips out punctuation so swear, ...swear and s.wear are all caught as words
-  //we actually join this and then split it again, so that it can still do word by word matching (it's faster!)
-  const noPunct = message.content.match(/[^_\W]+/g).join(' ');
-  const swearCheck = noPunct.split(' ');
-  console.log(swearCheck);
+  //profanity checking function first splits the message into words
+  const swearCheck = message.content.split(' ');
 
   //keep the discord ID of the person who sent this message - we'll need it for basically all commands!
   //fun fact, if i don't wrap this in single quotes, JS sometimes(!) interprets it as a big int and causes me problems later
@@ -56,7 +53,9 @@ disclient.on('message', message => {
     //todo: refactor this later
     if (`'${message.guild.id}'` === `'${process.env.HOME_GUILD}'` && `'${message.author.id}'` != `'${process.env.MY_ID}'`){
       for (i = 0; i < swearCheck.length; i++) {
-        if (profanity.includes(swearCheck[i])) {
+        //strips out punctuation so swear, ...swear and s.wear are all caught the same
+        const noPunct = swearCheck[i].match(/[^_\W]+/g).join('');
+        if (profanity.includes(noPunct) {
           message.delete();
           disclient.channels.cache.get(`825934332027469866`).send(`message "${message.content}" from ${message.author} in channel ${message.channel} contained this bad word: ${swearCheck[i]}`);
           return;
