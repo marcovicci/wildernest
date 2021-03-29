@@ -28,13 +28,14 @@ disclient.once('ready', () => {
 //On a new message in a channel the bot has access to...
 disclient.on('message', message => {
 
-  //profanity checking function
-  const swearCheck = message.content.split(' ');
+  //profanity checking function - strips out punctuation so swear, ...swear and s.wear are all caught as words
+  const swearCheck = message.content.match(/[^_\W]+/g);
+  console.log(swearCheck);
 
   //keep the discord ID of the person who sent this message - we'll need it for basically all commands!
   //fun fact, if i don't wrap this in single quotes, JS sometimes(!) interprets it as a big int and causes me problems later
   const verifyDiscordID = `'${message.author.id}'`;
-  console.log(`'${message.guild.id}'`, `'${process.env.HOME_GUILD}'`);
+
 
   //only accepts commands if they begin with its prefix value I set up on Heroku
   if (message.content.startsWith(process.env.PREFIX)) {
