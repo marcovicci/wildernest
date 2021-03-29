@@ -55,7 +55,7 @@ disclient.on('message', message => {
 
     //but let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
     for (i = 0; i < profanity.length; i++) {
-      if (swearCheck.includes(profanity[i]) && `'${message.guild.id}'` === '825594271993954315' && `'${message.author.id}'` != process.env.MY_ID){
+      if (swearCheck.includes(profanity[i]) && `'${message.author.id}'` != process.env.MY_ID) {
         message.delete();
         disclient.channels.cache.get(`825934332027469866`).send('message contained this bad word: ' + profanity[i]);
         return;
