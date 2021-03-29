@@ -41,8 +41,8 @@ disclient.on('message', message => {
 
       //in lieu of a sophisticated event handler i just have this block leading to some functions
       if (command === 'i\'m' || command === 'im') UserCreate(message, args, verifyDiscordID);
-      else if (command === 'pets') PetsCreate(message, args, verifyDiscordID);
-      else if (command === 'hi') HelloPet(message, args, verifyDiscordID);
+      else if (command === 'pets' || command === 'pet') PetsCreate(message, args, verifyDiscordID);
+      else if (command === 'hi' || command === 'hey' || command === 'hello' || command === 'hiya') HelloPet(message, args, verifyDiscordID);
     }
 });
 
@@ -224,6 +224,9 @@ async function HelloPet(message, args, verifyDiscordID) {
 
 async function BuildPetEmbed(message, sel, checkUsers) {
 
+  //count amount of reactions
+  const lovePats = 0;
+
   //build embed object
   const petEmbed = {
 	color: 0x0099ff,
@@ -267,6 +270,7 @@ async function BuildPetEmbed(message, sel, checkUsers) {
 
   collector.on('collect', (reaction, user) => {
     //updates pet footer and images, then edits the embed, whenever a react is added
+    lovePats ++;
     petEmbed.footer.text = `${sel.rows[0].petname} looks delighted to receive a pat!`;
     petEmbed.image.url = 'attachment://happy.png';
     petEmbed.footer.icon_url = 'attachment://normal.png';
@@ -275,7 +279,7 @@ async function BuildPetEmbed(message, sel, checkUsers) {
 
   collector.on('end', collected => {
     //final update after the collection timeout of 30 seconds
-    petEmbed.footer.text = `${sel.rows[0].petname} enjoyed ${collected.size} pat(s) in 30 seconds.`;
+    petEmbed.footer.text = `${sel.rows[0].petname} enjoyed ${lovePats} pat(s) in 30 seconds.`;
     petEmbed.image.url = 'attachment://normal.png';
     petEmbed.footer.icon_url = 'attachment://happy.png';
     ownMsg.edit({ embed: petEmbed });
