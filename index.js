@@ -15,9 +15,9 @@ const sql = new Pool({
 //profanity filter hosted on heroku
 const profanity = process.env.PROFANITY.split(' ');
 
-//Sends to my bot spam channel once the bot is ready for interaction
+//Sends to my bot logs channel once the bot is ready for interaction
 disclient.once('ready', () => {
-  disclient.channels.cache.get(`825620341006008321`).send(`hewwo. I'm back online.`)
+  disclient.channels.cache.get(`825934332027469866`).send(`hewwo. I'm back online.`)
   //custom activity
   disclient.user.setActivity('http://wilderne.st/', { type: 'PLAYING' })
   .then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
@@ -31,8 +31,8 @@ disclient.on('message', message => {
       for (i = 0; i < profanity.length; i++) {
         if (`'${message.guild.id}'` != '825594271993954315' || `'${message.author.id}'` != process.env.MY_ID) return; //only in my server pls, and not messages from the bot
         else if (message.content.includes(profanity[i])){
-          console.log('message contained this bad word: ' + profanity[i]);
           message.delete();
+          disclient.channels.cache.get(`825934332027469866`).send('message contained this bad word: ' + profanity[i]);
           return;
       }}
 
