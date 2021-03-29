@@ -41,7 +41,7 @@ disclient.on('message', message => {
       //in lieu of a sophisticated event handler i just have this block leading to some functions
       if (command === 'i\'m' || command === 'im') UserCreate(message, args, verifyDiscordID);
       else if (command === 'pets' || command === 'pet') PetsCreate(message, args, verifyDiscordID);
-      else if (command === 'hi' || command === 'hey' || command === 'hello' || command === 'hiya') HelloPet(message, args, verifyDiscordID);
+      else if (command === 'hi' || command === 'hey' || command === 'hello' || command === 'hiya' || command === 'heya' || command === 'heyo') HelloPet(message, args, verifyDiscordID);
     }
 });
 
