@@ -27,35 +27,36 @@ disclient.once('ready', () => {
 //On a new message in a channel the bot has access to...
 disclient.on('message', message => {
 
-    //let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
-      for (i = 0; i < profanity.length; i++) {
-        console.log(`${message.guild.id}`);
-        console.log(`825594271993954315`);
-        if (message.content.includes(profanity[i]) && `'${message.guild.id}'` === '825594271993954315' && `'${message.author.id}'` != process.env.MY_ID){
-          message.delete();
-          disclient.channels.cache.get(`825934332027469866`).send('message contained this bad word: ' + profanity[i]);
-          return;
-        }
-        //otherwise it only cares about messages if they begin with its prefix value I set up on Heroku
-        if (message.content.startsWith(process.env.PREFIX)) {
+  //only cares about messages if they begin with its prefix value I set up on Heroku
+  if (message.content.startsWith(process.env.PREFIX)) {
 
-          //split the message into arguments and commands
-          const args = message.content.slice(process.env.PREFIX.length).trim().split(' ');
-          const command = args.shift().toLowerCase();
+    //split the message into arguments and commands
+    const args = message.content.slice(process.env.PREFIX.length).trim().split(' ');
+    const command = args.shift().toLowerCase();
 
-          //keep the discord ID of the person who sent this message - we'll need it for basically all commands!
-          //fun fact, if i don't wrap this in single quotes, JS interprets it as a big int and causes me problems later
-          const verifyDiscordID = `'${message.author.id}'`;
+    //keep the discord ID of the person who sent this message - we'll need it for basically all commands!
+    //fun fact, if i don't wrap this in single quotes, JS interprets it as a big int and causes me problems later
+    const verifyDiscordID = `'${message.author.id}'`;
 
-          //this helped me with a lot of bug testing
-          console.log('cmd is ' + command);
-          console.log('args is ' + args);
+    //this helped me with a lot of bug testing
+    console.log('cmd is ' + command);
+    console.log('args is ' + args);
 
-          //in lieu of a sophisticated event handler i just have this block leading to some functions
-          if (command === 'i\'m' || command === 'im') UserCreate(message, args, verifyDiscordID);
-          else if (command === 'pets' || command === 'pet') PetsCreate(message, args, verifyDiscordID);
-          else if (command === 'hi' || command === 'hey' || command === 'hello' || command === 'hiya' || command === 'heya' || command === 'heyo' || command === 'howdy') HelloPet(message, args, verifyDiscordID);
-        }}
+    //in lieu of a sophisticated event handler i just have this block leading to some functions
+    if (command === 'i\'m' || command === 'im') UserCreate(message, args, verifyDiscordID);
+    else if (command === 'pets' || command === 'pet') PetsCreate(message, args, verifyDiscordID);
+    else if (command === 'hi' || command === 'hey' || command === 'hello' || command === 'hiya' || command === 'heya' || command === 'heyo' || command === 'howdy') HelloPet(message, args, verifyDiscordID);
+  }
+
+    //but let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
+    for (i = 0; i < profanity.length; i++) {
+      console.log(`${message.guild.id}`);
+      console.log(`825594271993954315`);
+      if (message.content.includes(profanity[i]) && `'${message.guild.id}'` === '825594271993954315' && `'${message.author.id}'` != process.env.MY_ID){
+        message.delete();
+        disclient.channels.cache.get(`825934332027469866`).send('message contained this bad word: ' + profanity[i]);
+        return;
+      }} 
 });
 
 //async functions are the best for my purposes - being able to 'try' reading and writing to the SQL database was essential
