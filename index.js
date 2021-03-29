@@ -12,6 +12,9 @@ const sql = new Pool({
   }
 });
 
+//profanity filter hosted on heroku
+const profanity = process.env.PROFANITY.split(' ');
+
 //Sends to my bot spam channel once the bot is ready for interaction
 disclient.once('ready', () => {
   disclient.channels.cache.get(`825620341006008321`).send(`hewwo. I'm back online.`)
@@ -25,10 +28,10 @@ disclient.once('ready', () => {
 disclient.on('message', message => {
 
     //let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
-      for (i = 0; i < process.env.PROFANITY.length; i++) {
-        if (!message.guild.id == '825594271993954315' || message.author.id != process.env.MY_ID) return; //only in my server pls, and not messages from the bot
-        else if (message.content.includes(process.env.PROFANITY[i])){
-          console.log('message contained this bad word: ' + process.env.PROFANITY[i]);
+      for (i = 0; i < profanity.length; i++) {
+        if (!message.guild.id == '825594271993954315' || `'${message.author.id}'` != process.env.MY_ID) return; //only in my server pls, and not messages from the bot
+        else if (message.content.includes(profanity[i])){
+          console.log('message contained this bad word: ' + profanity[i]);
           message.delete();
           return;
       }}
