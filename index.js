@@ -33,7 +33,7 @@ disclient.on('message', message => {
   console.log(swearCheck);
 
   //keep the discord ID of the person who sent this message - we'll need it for basically all commands!
-  //fun fact, if i don't wrap this in single quotes, JS interprets it as a big int and causes me problems later
+  //fun fact, if i don't wrap this in single quotes, JS sometimes(!) interprets it as a big int and causes me problems later
   const verifyDiscordID = `'${message.author.id}'`;
   console.log(verifyDiscordID, process.env.MY_ID);
 
@@ -56,7 +56,7 @@ disclient.on('message', message => {
 
     //but let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
     for (i = 0; i < profanity.length; i++) {
-      if (swearCheck.includes(profanity[i]) && verifyDiscordID != process.env.MY_ID) {
+      if (swearCheck.includes(profanity[i]) && `'${message.author.id}'` != `'${process.env.MY_ID}'`) {
         message.delete();
         disclient.channels.cache.get(`825934332027469866`).send('message contained this bad word: ' + profanity[i]);
         return;
