@@ -78,8 +78,7 @@ disclient.on('message', message => {
         }}
     }
 
-
-});
+}});
 
 //async functions are the best for my purposes - being able to 'try' reading and writing to the SQL database was essential
 async function UserCreate(message, commanderName, verifyDiscordID) {
