@@ -69,7 +69,7 @@ disclient.on('message', message => {
     //this is goofy, but i include it both inside and outside that if block, because otherwise i might execute a function with swears
     //and if i include it BEFORE the if block, the "return" prevents the if block from triggering!
     //todo: refactor this later
-    if (`'${message.guild.id}'` === `'${process.env.HOME_GUILD}'` && `'${message.author.id}'` != `'${process.env.MY_ID}'`)){
+    if (`'${message.guild.id}'` === `'${process.env.HOME_GUILD}'` && `'${message.author.id}'` != `'${process.env.MY_ID}'`){
       for (i = 0; i < profanity.length; i++) {
         if (swearCheck.includes(profanity[i])) {
           message.delete();
