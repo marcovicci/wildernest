@@ -23,7 +23,16 @@ disclient.once('ready', () => {
 
 //On a new message in a channel the bot has access to...
 disclient.on('message', message => {
-    //it only cares about messages if they begin with its prefix value I set up on Heroku
+
+    //let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
+      for (i = 0; i < process.env.PROFANITY.length; i++) {
+        if (!message.guild.id == '825594271993954315') return; //only in my server pls
+        if (message.includes(process.env.PROFANITY[i])){
+          message.delete();
+          return;
+      }}
+
+    //otherwise it only cares about messages if they begin with its prefix value I set up on Heroku
     if (message.content.startsWith(process.env.PREFIX)) {
 
       //split the message into arguments and commands
