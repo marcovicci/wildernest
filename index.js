@@ -224,7 +224,7 @@ async function HelloPet(message, args, verifyDiscordID) {
 async function BuildPetEmbed(message, sel, checkUsers) {
 
   //count amount of reactions
-  const lovePats = 0;
+
 
   //build embed object
   const petEmbed = {
@@ -258,6 +258,7 @@ async function BuildPetEmbed(message, sel, checkUsers) {
   //using message reply is harmless here (embeds do not cause a ping) and ensures it's sent in the right channel
   let ownMsg = await message.reply({ embed: petEmbed });
   ownMsg.react('❤️');
+  var lovePats = 0;
 
   //discord.js has its own framework for collecting reactions, which i use here
   const filter = (reaction, user) => {
