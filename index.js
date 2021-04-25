@@ -53,10 +53,7 @@ disclient.on('message', message => {
     //todo: refactor this later
     if (`'${message.guild.id}'` === `'${process.env.HOME_GUILD}'` && `'${message.author.id}'` != `'${process.env.MY_ID}'`){
       for (i = 0; i < swearCheck.length; i++) {
-        //strips out punctuation so swear, ...swear and s.wear are all caught the same
-        const noPunct = swearCheck[i].match(/[^_\W]+/g).join('');
-        console.log(noPunct);
-        if (profanity.includes(noPunct)) {
+        if (profanity.includes(swearCheck[i])) {
           message.delete();
           disclient.channels.cache.get(`825934332027469866`).send(`message "${message.content}" from ${message.author} in channel ${message.channel} contained this bad word: ${swearCheck[i]}`);
           return;
@@ -260,9 +257,6 @@ async function HelloPet(message, args, verifyDiscordID) {
 }
 
 async function BuildPetEmbed(message, sel, checkUsers) {
-
-  //count amount of reactions
-
 
   //build embed object
   const petEmbed = {
