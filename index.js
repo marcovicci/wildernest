@@ -284,15 +284,15 @@ gm(`./pets/base/${species}/normal_colorable.png`)
 //colorize according to pet's color values
 .colorize(redValue, greenValue, blueValue)
 .write(`./temp/${petID}_colored.png`, function (err) {
-  if (!err) console.log(`pet img colored and saved to ./temp/${petID}_colored.png`);
-  else console.log(err);
-});
-
-gm(`./temp/${petID}_colored.png`)
-//composite with static pet image layer
-.composite(`./pets/base/${species}/normal_static.png`)
-.write(`./pets/id/${petID}_normal.png`, function (err) {
-  if (!err) console.log(`done! image saved to /pets/id/${petID}_normal.png`);
+  if (!err) {
+    gm(`./temp/${petID}_colored.png`)
+    //composite with static pet image layer
+    .composite(`./pets/base/${species}/normal_static.png`)
+    .write(`./pets/id/${petID}_normal.png`, function (err) {
+      if (!err) console.log(`done! image saved to /pets/id/${petID}_normal.png`);
+      else console.log(err);
+    });
+  }
   else console.log(err);
 });
 
@@ -301,15 +301,15 @@ gm(`./pets/base/${species}/happy_colorable.png`)
 //colorize according to pet's color values
 .colorize(redValue, greenValue, blueValue)
 .write(`./temp/${petID}_colored_happy.png`, function (err) {
-  if (!err) console.log(`pet img colored and saved to ./temp/${petID}_colored_happy.png`);
-  else console.log(err);
-});
-
-gm(`./temp/${petID}_colored_happy.png`)
-//composite with static pet image layer
-.composite(`./pets/base/${species}/happy_static.png`)
-.write(`./pets/id/${petID}_happy.png`, function (err) {
-  if (!err) console.log(`done! image saved to /pets/id/${petID}_happy.png`);
+  if (!err) {
+    gm(`./temp/${petID}_colored_happy.png`)
+    //composite with static pet image layer
+    .composite(`./pets/base/${species}/happy_static.png`)
+    .write(`./pets/id/${petID}_happy.png`, function (err) {
+      if (!err) console.log(`done! image saved to /pets/id/${petID}_happy.png`);
+      else console.log(err);
+    });
+  }
   else console.log(err);
 });
 
