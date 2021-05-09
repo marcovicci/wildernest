@@ -3,13 +3,13 @@ const Discord = require('discord.js');
 const disclient = new Discord.Client();
 
 //Twit bot setup
-const Twit = require('twit');
-const Twitter = new Twit({
-  consumer_key: process.env.TWIT_KEY,
-  consumer_secret: process.env.TWIT_SECRET,
-  access_token: '',
-  access_token_secret: ''
-});
+//const Twit = require('twit');
+//const Twitter = new Twit({
+//  consumer_key: process.env.TWIT_KEY,
+//  consumer_secret: process.env.TWIT_SECRET,
+//  access_token: '',
+//  access_token_secret: ''
+//});
 
 //GraphicsMagick setup
 var gm = require('gm');
