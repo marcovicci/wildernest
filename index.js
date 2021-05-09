@@ -220,41 +220,22 @@ async function makePetPrompt(message, verifyDiscordID) {
         	return user.id === verifyDiscordID;
           };
 
-          const collector = message.createReactionCollector(filter, { time: 30000 });
-
-          collector.on('collect', m => {
-    	       console.log(`Collected ${m.content}`);
-             const args = m.content.trim().split(' ');
-             const sel = await sql.query(`SELECT exists(SELECT * FROM pets WHERE petname = ${args[0]})`);
-             if (sel.rows[0].exists) {
-               //pet name taken
-               return message.reply(`I already have a pet named ${args[0]} in my system, can you try another name?`);
-               collector.resetTimer();
-             }
-             else {
-               //let's try making a pet
-               collector.stop('success');
-             }
-           });
-
-           collector.on('end', collected => {
-    	        console.log(`Done collecting`);
-              if (!collector.end.reason == 'success') return message.reply(`I've timed out and stopped listening... you can try **~make** to restart the process.'`);
-            });
-
-          message.channel.awaitMessages(filter, { max: 100, time: 30000, errors: ['time'] })
-          		.then(collected => {
-                const args = collected.content.trim().split(' ');
-
-                if (sel.rows[0].exists) {
-                  //pet name taken
-                  return message.reply(`I already have a pet named ${args[0]} in my system`);
-                }
-          			message.channel.send(``);
-          		})
-          		.catch(collected => {
-          			message.channel.send(`Sorry, I didn't get a reply in time. You can send **~make** again here to restart the process.`);
-          		});
+	            message.channel.awaitMessages(filter, { max: 100, time: 60000, errors: ['time'] })
+		            .then(collected => {
+                  const args = m.content.trim().split(' ');
+                  const sel = await sql.query(`SELECT exists(SELECT * FROM pets WHERE petname = ${args[0]})`);
+                  if (sel.rows[0].exists) {
+                    //pet name taken
+                    return message.reply(`I already have a pet named ${args[0]} in my system, can you try another name?`);
+                  }
+                  else {
+                    //let's try making a pet
+                    NewPetGen(message, userInfo, verifyDiscordID, args[0], bird);
+                  }
+		            })
+		            .catch(collected => {
+			               return message.reply(`I've timed out and stopped listening... you can try **~make** to restart the process.`);
+		            });
     		})
         .catch(err => {
     			console.log(`Could not send help DM to ${message.author.tag}.\n`, err);
@@ -272,7 +253,7 @@ async function makePetPrompt(message, verifyDiscordID) {
   } catch(err) {console.log(err)}
 }
 
-async function NewPetGen(discordUser, petName, species) {
+async function NewPetGen(message, userInfo, discordUser, petName, species) {
 
   //start defining pet values... color
   let pet_rgb = [0, 0, 0];
@@ -355,18 +336,14 @@ async function NewPetGen(discordUser, petName, species) {
   .colorspace('RGB')
   .fill(rgb(redValue, greenValue, blueValue))
   .colorize(100, 100, 100)
-  .write(`./pets/id/${petID}_colored.png`, function (err) {
+  .write(`./pets/${petname}_colored.png`, function (err) {
     if (!err) {
-      gm(`./pets/id/${petID}_colored.png`)
+      gm(`./pets/${petname}_colored.png`)
       //composite with static pet image layer
       .composite(`./pets/base/${species}/normal_static.png`)
-      .write(`./pets/id/${petID}_normal.png`, function (err) {
+      .write(`./pets/${petname}_normal.png`, function (err) {
         if (!err) {
-          cloudinary.uploader.upload(`./pets/id/${petID}_normal.png`,
-          function(result) {
-            console.log(result);
-            console.log(`Image is now accessible through Cloudinary: ${petID}_normal.png`);
-          }, {public_id: `${petID}_normal`})
+          console.log(`Attachment at: ./pets/${petname}_normal.png`);
         }
         else console.log(err);
       });
@@ -380,24 +357,20 @@ async function NewPetGen(discordUser, petName, species) {
   .colorspace(RGB)
   .fill(rgb(redValue, greenValue, blueValue))
   .colorize(100, 100, 100)
-  .write(`./pets/id/${petID}_colored_happy.png`, function (err) {
+  .write(`./pets/${petname}_colored_happy.png`, function (err) {
     if (!err) {
-      gm(`./pets/id/${petID}_colored_happy.png`)
+      gm(`./pets/${petname}_colored_happy.png`)
       //composite with static pet image layer
       .composite(`./pets/base/${species}/happy_static.png`)
-      .write(`./pets/id/${petID}_happy.png`, function (err) {
-        cloudinary.uploader.upload(`./pets/id/${petID}_happy.png`,
-        function(result) {
-          console.log(result);
-          console.log(`Image is now accessible through Cloudinary: ${petID}_happy.png`);
-        }, {public_id: `${petID}_happy`})
+      .write(`./pets/${petname}_happy.png`, function (err) {
+        console.log(`Attachment at: ./pets/${petname}_happy.png`);
       });
     }
     else console.log(err);
   });
 }
 
-async function makePetPersonality() {
+async function makePetPersonality(message, userInfo, discordUser, petName, species, pet_rgb) {
 
   //personality values
   let pet_boom = 50;
@@ -408,6 +381,13 @@ async function makePetPersonality() {
   const petPersonality = {
   color: 0x0099ff,
   title: `${petname} the ${species}`,
+  files: [{
+    attachment:`./pets/${petname}_normal.png`,
+    name:'normal.png'
+  }],
+  image: {
+		url: 'attachment://normal.png',
+	},
   description: `One last thing... all pets are made of four flavours: 💥BOOM, 💃FLEX, 🔥HEAT and 🍖MEAT. Pick your favorite flavour from below. You can change this later.`,
   footer: {text: `Or, hit the X to cancel creating a pet named ${petname}.`}
   };
@@ -456,6 +436,81 @@ async function makePetPersonality() {
       petPersonality.description = `I didn't catch your reaction in time, so I didn't make that pet for you.`;
       finalMsg.edit({ embed: petPersonality });
   	});
+}
+
+async function PetCommit(message, userInfo, discordUser, petname, species, pet_rgb, pet_boom, pet_flex, pet_heat, pet_meat) {
+  try {
+      //write this new pet info into our database!
+      await sql.query(`
+        INSERT INTO pets (petname, ownerid, species, redval, greenval, blueval, boom, flex, heat, meat)
+          VALUES (${petname}, ${userInfo.rows[0].userid}, ${species}, ${pet_rgb[0]}, ${pet_rgb[1]}, ${pet_rgb[2]}, ${pet_boom}, ${pet_flex}, ${pet_heat}, ${pet_meat})
+      `);
+
+      //also increment pet amount for user
+      userInfo.rows[0].totalpets++;
+      await sql.query(`
+        UPDATE users
+        SET totalpets=${userInfo.rows[0].totalpets}
+        WHERE userid=${userInfo.rows[0].userid}
+      `);
+
+      //fetch pet ID for the upcoming thang
+      const newPetInfo = await sql.query(`
+        SELECT * FROM pets WHERE petname = ${petname}
+      `);
+
+      //let's begin gm and fetch the base image for our pet species
+      gm(`./pets/base/${newPetInfo.rows[0].species}/normal_colorable.png`)
+      //colorize according to pet's color values
+      .colorspace('RGB')
+      .fill(rgb(newPetInfo.rows[0].redval, newPetInfo.rows[0].greenval, newPetInfo.rows[0].blueval))
+      .colorize(100, 100, 100)
+      .write(`./pets/id/${newPetInfo.rows[0].petid}_colored.png`, function (err) {
+        if (!err) {
+          gm(`./pets/id/${newPetInfo.rows[0].petid}_colored.png`)
+          //composite with static pet image layer
+          .composite(`./pets/base/${newPetInfo.rows[0].species}/normal_static.png`)
+          .write(`./pets/id/${newPetInfo.rows[0].petid}_normal.png`, function (err) {
+            if (!err) {
+              cloudinary.uploader.upload(`./pets/id/${newPetInfo.rows[0].petid}_normal.png`,
+              function(result) {
+                console.log(result);
+                console.log(`Image is now accessible through Cloudinary: ${newPetInfo.rows[0].petid}_normal.png`);
+              }, {public_id: `${newPetInfo.rows[0].petid}_normal`})
+            }
+            else console.log(err);
+          });
+        }
+        else console.log(err);
+      });
+
+      //happy ver
+      gm(`./pets/base/${newPetInfo.rows[0].species}/happy_colorable.png`)
+      //colorize according to pet's color values
+      .colorspace(RGB)
+      .fill(rgb(newPetInfo.rows[0].redval, newPetInfo.rows[0].greenval, newPetInfo.rows[0].blueval))
+      .colorize(100, 100, 100)
+      .write(`./pets/id/${newPetInfo.rows[0].petid}_colored_happy.png`, function (err) {
+        if (!err) {
+          gm(`./pets/id/${newPetInfo.rows[0].petid}_colored_happy.png`)
+          //composite with static pet image layer
+          .composite(`./pets/base/${newPetInfo.rows[0].species}/happy_static.png`)
+          .write(`./pets/id/${newPetInfo.rows[0].petid}_happy.png`, function (err) {
+            cloudinary.uploader.upload(`./pets/id/${newPetInfo.rows[0].petid}_happy.png`,
+            function(result) {
+              console.log(result);
+              console.log(`Image is now accessible through Cloudinary: ${newPetInfo.rows[0].petid}_happy.png`);
+            }, {public_id: `${newPetInfo.rows[0].petid}_happy`})
+          });
+        }
+        else console.log(err);
+      });
+
+      BuildPetEmbed(message, newPetInfo, userInfo);
+
+  } catch(err) {
+    console.log(err);
+  }
 }
 
 async function HelloPet(message, args, verifyDiscordID) {
