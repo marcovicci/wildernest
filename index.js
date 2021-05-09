@@ -427,6 +427,7 @@ async function makePetPersonality() {
       petPersonality.description = `I didn't catch your reaction in time, so I didn't make that pet for you.`;
       finalMsg.edit({ embed: petPersonality });
   	});
+}
 
 async function HelloPet(message, args, verifyDiscordID) {
   //check this users
