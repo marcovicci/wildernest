@@ -14,7 +14,7 @@
   "author": "Zelle Marcovicci",
   "dependencies": {
     "canvas": "^2.7.0",
-    "cloudinary": "",
+    "cloudinary": "^1.25.1",
     "discord.js": "^12.5.1",
     "gm": "^1.23.1",
     "graphicsmagick": "^0.0.1",
