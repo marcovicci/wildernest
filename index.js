@@ -76,7 +76,7 @@ disclient.on('message', message => {
     }
 
     //in lieu of a sophisticated event handler i just have this block leading to some functions
-    if (command === 'i\'m' || command === 'im' || command === 'I’m') UserCreate(message, args, verifyDiscordID);
+    if (command === 'i\'m' || command === 'im' || command === 'I’m' || command === 'user') userMake(message, args, verifyDiscordID);
     if (command === 'info') getInfo(message, verifyDiscordID);
     else if (command === 'pets' || command === 'pet') PetsCreate(message, args, verifyDiscordID);
     else if (command === 'color') TestColorPet(args);
@@ -135,6 +135,37 @@ async function getInfo(message, verifyDiscordID) {
     }
     message.reply({ embed: infoBlock });
   } catch(err) { console.log(err) }
+}
+
+async function userMake(message, args, verifyDiscordID) {
+  if (!args.length) {
+    return message.reply(`Can you try sending that message again, with the username you want? Something like... **~user Bob** (but only if you're Bob)`);
+  }
+  else {
+    try {
+      //check if user has account
+      const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE discordid = ${verifyDiscordID})`);
+      if (sel.rows[0].exists) {
+        //fetch info
+        const sel = await sql.query(`SELECT * FROM users WHERE discordid = ${verifyDiscordID}`);
+        return message.reply(`Hi ${sel.rows[0].username}. You're already in my system. Thanks for checking. Say **~info** for more.`);
+      }
+      else {
+        //check if username is taken
+        const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE username = '${args[0]}')`);
+        if (sel.rows[0].exists) {
+          return message.reply(`It looks like the username ${args[0]} is taken, sorry! Can you try another?`);
+        }
+        else {
+          await sql.query(`
+      		  INSERT INTO users (username, discordid)
+              VALUES ('${args[0]}', ${verifyDiscordID})
+      		`);
+          return message.reply(`Thanks, ${args[0]}! I made you an account, with Discord ID ${verifyDiscordID}.`);
+        }
+      }
+    } catch(err) { console.log(err) }
+  }
 }
 
 //async functions are the best for my purposes - being able to 'try' reading and writing to the SQL database was essential
