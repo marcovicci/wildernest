@@ -80,6 +80,7 @@ disclient.on('message', message => {
     if (command === 'i\'m' || command === 'im' || command === 'I’m') UserCreate(message, args, verifyDiscordID);
     else if (command === 'pets' || command === 'pet') PetsCreate(message, args, verifyDiscordID);
     else if (command === 'color') TestColorPet(args);
+    else if (command === 'search') searchForMe(verifyDiscordID);
     else if (command === 'hi' || command === 'hey' || command === 'hello' || command === 'hiya' || command === 'heya' || command === 'heyo' || command === 'howdy') HelloPet(message, args, verifyDiscordID);
   } else {
     //but let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
@@ -207,6 +208,7 @@ async function PetsCreate(message, args, verifyDiscordID) {
         		  UPDATE users SET totalpets = totalpets + 1
               WHERE userid = ${checkUsers}
         			`);
+
               return message.reply(`Nice. I made you a pet named ${args[1]}.`);
             } catch(err) {
               //why didn't that work? let's see
@@ -239,6 +241,192 @@ async function PetsCreate(message, args, verifyDiscordID) {
       return message.reply(`Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
     }
 }
+
+async function searchForMe(verifyDiscordID) {
+  const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE discordid = ${verifyDiscordID})`);
+  console.log(sel);
+}
+
+async function NewPetGen(discordUser, petName, species) {
+
+  //start defining pet values... color
+  let pet_rgb = [0, 0, 0];
+
+  //prompt user to select basic functions
+  const colorYourPet = {
+	color: 0x0099ff,
+	title: `${petname} the ${species}`,
+  description: `Cool, let's make a pet. Please hit the reaction below to pick your pet's color. You can change this later.`,
+  footer: {text: `Or, hit the X to cancel creating a pet named ${petname}.`}
+  };
+
+  let ownMsg = await message.reply({ embed: colorYourPet });
+  ownMsg.react('⚪');
+  ownMsg.react('🔴');
+  ownMsg.react('🟠');
+  ownMsg.react('🟡');
+  ownMsg.react('🟢');
+  ownMsg.react('🔵');
+  ownMsg.react('🟣');
+  ownMsg.react('❌');
+
+  //discord.js has its own framework for collecting reactions, which i use here
+  const filter = (reaction, user) => {
+    //this filter only responds to hear reactions, and only if they're sent by the pet maker
+  	return ['⚪', '🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '❌'].includes(reaction.emoji.name) && user.id === discordUser;
+  };
+
+  ownMsg.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
+	.then(collected => {
+		const reaction = collected.first();
+
+		if (reaction.emoji.name === '⚪') {
+      colorYourPet.description = `White? Why not. Consider it done.`;
+      ownMsg.edit({ embed: colorYourPet });
+      pet_rgb = [0, 0, 0];
+		}
+    if (reaction.emoji.name === '🔴') {
+      colorYourPet.description = `Red? Radical. Consider it done.`;
+      ownMsg.edit({ embed: colorYourPet });
+      pet_rgb = [220, 58, 57];
+		}
+    if (reaction.emoji.name === '🟠') {
+      colorYourPet.description = `Orange? Obviously the best. Consider it done.`;
+      ownMsg.edit({ embed: colorYourPet });
+      pet_rgb = [245, 132, 31];
+		}
+    if (reaction.emoji.name === '🟡') {
+      colorYourPet.description = `Yellow? Yesss. Consider it done.`;
+      ownMsg.edit({ embed: colorYourPet });
+      pet_rgb = [249, 191, 44];
+		}
+    if (reaction.emoji.name === '🟢') {
+      colorYourPet.description = `Green? Great. Consider it done.`;
+      ownMsg.edit({ embed: colorYourPet });
+      pet_rgb = [117, 173, 68];
+		}
+    if (reaction.emoji.name === '🔵') {
+      colorYourPet.description = `Blue? Brilliant. Consider it done.`;
+      ownMsg.edit({ embed: colorYourPet });
+      pet_rgb = [45, 141, 227];
+		}
+    if (reaction.emoji.name === '🟣') {
+      colorYourPet.description = `Purple? Perfect. Consider it done.`;
+      ownMsg.edit({ embed: colorYourPet });
+      pet_rgb = [129, 54, 148];
+		}
+    if (reaction.emoji.name === '❌') {
+      colorYourPet.description = 'Cool. Consider that pet unmade.';
+      ownMsg.edit({ embed: colorYourPet });
+		}
+	})
+	.catch(collected => {
+    colorYourPet.description = `I didn't catch your reaction in time, so I didn't make that pet for you.`;
+    ownMsg.edit({ embed: colorYourPet });
+	});
+
+  //let's begin gm and fetch the base image for our pet species
+  gm(`./pets/base/${species}/normal_colorable.png`)
+  //colorize according to pet's color values
+  .colorize(redValue, greenValue, blueValue)
+  .write(`./pets/id/${petID}_colored.png`, function (err) {
+    if (!err) {
+      gm(`./pets/id/${petID}_colored.png`)
+      //composite with static pet image layer
+      .composite(`./pets/base/${species}/normal_static.png`)
+      .write(`./pets/id/${petID}_normal.png`, function (err) {
+        if (!err) {
+          cloudinary.uploader.upload(`./pets/id/${petID}_normal.png`,
+          function(result) {
+            console.log(result);
+            console.log(`Image is now accessible through Cloudinary: ${petID}_normal.png`);
+          }, {public_id: `${petID}_normal`})
+        }
+        else console.log(err);
+      });
+    }
+    else console.log(err);
+  });
+
+  //happy ver
+  gm(`./pets/base/${species}/happy_colorable.png`)
+  //colorize according to pet's color values
+  .colorize(redValue, greenValue, blueValue)
+  .write(`./pets/id/${petID}_colored_happy.png`, function (err) {
+    if (!err) {
+      gm(`./pets/id/${petID}_colored_happy.png`)
+      //composite with static pet image layer
+      .composite(`./pets/base/${species}/happy_static.png`)
+      .write(`./pets/id/${petID}_happy.png`, function (err) {
+        cloudinary.uploader.upload(`./pets/id/${petID}_happy.png`,
+        function(result) {
+          console.log(result);
+          console.log(`Image is now accessible through Cloudinary: ${petID}_happy.png`);
+        }, {public_id: `${petID}_happy`})
+      });
+    }
+    else console.log(err);
+  });
+}
+
+async function makePetPersonality() {
+
+  //personality values
+  let pet_boom = 50;
+  let pet_flex = 50;
+  let pet_heat = 50;
+  let pet_meat = 50;
+
+  const petPersonality = {
+  color: 0x0099ff,
+  title: `${petname} the ${species}`,
+  description: `One last thing... all pets are made of four flavours: 💥BOOM, 💃FLEX, 🔥HEAT and 🍖MEAT. Pick your favorite flavour from below. You can change this later.`,
+  footer: {text: `Or, hit the X to cancel creating a pet named ${petname}.`}
+  };
+
+  let finalMsg = await ownMsg.reply({ embed: petPersonality });
+  finalMsg.react('💥');
+  finalMsg.react('💃');
+  finalMsg.react('🔥');
+  finalMsg.react('🍖');
+  finalMsg.react('❌');
+
+  const filter = (reaction, user) => {
+    //this filter only responds to hear reactions, and only if they're sent by the pet maker
+    return ['💥', '💃', '🔥', '🍖', '❌'].includes(reaction.emoji.name) && user.id === discordUser;
+  };
+
+  finalMsg.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
+  .then(collected => {
+    const reaction = collected.first();
+
+    if (reaction.emoji.name === '💥') {
+      petPersonality.description = `Throw in some extra BOOM! 💥 Consider it done.`;
+      finalMsg.edit({ embed: petPersonality });
+      pet_boom = 75;
+    }
+    if (reaction.emoji.name === '💃') {
+      petPersonality.description = `Throw in some extra FLEX! 💃 Consider it done.`;
+      finalMsg.edit({ embed: petPersonality });
+      pet_flex = 75;
+    }
+    if (reaction.emoji.name === '🔥') {
+      petPersonality.description = `Throw in some extra HEAT! 🔥 Consider it done.`;
+      finalMsg.edit({ embed: petPersonality });
+      pet_heat = 75;
+    }
+    if (reaction.emoji.name === '🍖') {
+      petPersonality.description = `Throw in some extra MEAT! 🍖 Consider it done.`;
+      finalMsg.edit({ embed: petPersonality });
+      pet_meat = 75;
+    if (reaction.emoji.name === '❌') {
+      petPersonality.description = 'Cool. Consider that pet unmade.';
+      finalMsg.edit({ embed: petPersonality });
+    })
+  	.catch(collected => {
+      petPersonality.description = `I didn't catch your reaction in time, so I didn't make that pet for you.`;
+      finalMsg.edit({ embed: petPersonality });
+  	});
 
 async function HelloPet(message, args, verifyDiscordID) {
   //check this users
@@ -315,7 +503,7 @@ gm(`./pets/base/${species}/happy_colorable.png`)
     //composite with static pet image layer
     .composite(`./pets/base/${species}/happy_static.png`)
     .write(`./pets/id/${petID}_happy.png`, function (err) {
-      cloudinary.uploader.upload(`./pets/id/${petID}_normal.png`,
+      cloudinary.uploader.upload(`./pets/id/${petID}_happy.png`,
       function(result) {
         console.log(result);
         console.log(`Image is now accessible through Cloudinary: ${petID}_happy.png`);
@@ -329,10 +517,12 @@ gm(`./pets/base/${species}/happy_colorable.png`)
 
 async function BuildPetEmbed(message, sel, checkUsers) {
 
+  //cloudinary.url(`${petID}_happy.png`)
+
   //build embed object
   const petEmbed = {
 	color: 0x0099ff,
-	title: `${sel.rows[0].petname} the ${sel.rows[0].color} ${sel.rows[0].species}`,
+	title: `${sel.rows[0].petname} the ${sel.rows[0].species}`,
 	author: {
 		name: `Pet #${sel.rows[0].petid} @ WilderNest`,
     //when there is a web interface, this url will change for pet IDs
@@ -342,11 +532,11 @@ async function BuildPetEmbed(message, sel, checkUsers) {
   //i can swap between them without disrupting the embed appearance
   //when there are more types of pets, i can use the same color variable above in these image URL names!
   files: [{
-    attachment:'./bird_green.png',
+    attachment:cloudinary.url(`${sel.rows[0].petid}_normal.png`),
     name:'normal.png'
   },
   {
-    attachment:'./bird_green_happy.png',
+    attachment:cloudinary.url(`${sel.rows[0].petid}_happy.png`),
     name:'happy.png'
   }],
   image: {
