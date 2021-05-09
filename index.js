@@ -249,7 +249,7 @@ async function searchForMe(verifyDiscordID) {
 }
 
 async function searchForSatan(verifyDiscordID) {
-  const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE discordid = 666)`);
+  const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE discordid = '666')`);
   console.log(sel.rows[0]);
 }
 
