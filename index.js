@@ -12,8 +12,11 @@ const disclient = new Discord.Client();
 //});
 
 //GraphicsMagick setup
-var gm = require('gm');
+const gm = require('gm');
 const imageMagick = gm.subClass({imageMagick: true});
+
+//Cloudinary setup - this is the free file storage solution I'm using at the moment
+const cloudinary = require('cloudinary');
 
 //postgreSQL client setup
 const { Pool } = require('pg');
@@ -283,13 +286,19 @@ const blueValue = args[4];
 gm(`./pets/base/${species}/normal_colorable.png`)
 //colorize according to pet's color values
 .colorize(redValue, greenValue, blueValue)
-.write(`./temp/${petID}_colored.png`, function (err) {
+.write(`./pets/id/${petID}_colored.png`, function (err) {
   if (!err) {
-    gm(`./temp/${petID}_colored.png`)
+    gm(`./pets/id/${petID}_colored.png`)
     //composite with static pet image layer
     .composite(`./pets/base/${species}/normal_static.png`)
     .write(`./pets/id/${petID}_normal.png`, function (err) {
-      if (!err) console.log(`done! image saved to /pets/id/${petID}_normal.png`);
+      if (!err) {
+        cloudinary.uploader.upload(`./pets/id/${petID}_normal.png`,
+        function(result) {
+          console.log(result);
+          console.log(`Image is now accessible through Cloudinary: ${petID}_normal.png`);
+        }, {public_id: `${petID}_normal`})
+      }
       else console.log(err);
     });
   }
@@ -300,14 +309,17 @@ gm(`./pets/base/${species}/normal_colorable.png`)
 gm(`./pets/base/${species}/happy_colorable.png`)
 //colorize according to pet's color values
 .colorize(redValue, greenValue, blueValue)
-.write(`./temp/${petID}_colored_happy.png`, function (err) {
+.write(`./pets/id/${petID}_colored_happy.png`, function (err) {
   if (!err) {
-    gm(`./temp/${petID}_colored_happy.png`)
+    gm(`./pets/id/${petID}_colored_happy.png`)
     //composite with static pet image layer
     .composite(`./pets/base/${species}/happy_static.png`)
     .write(`./pets/id/${petID}_happy.png`, function (err) {
-      if (!err) console.log(`done! image saved to /pets/id/${petID}_happy.png`);
-      else console.log(err);
+      cloudinary.uploader.upload(`./pets/id/${petID}_normal.png`,
+      function(result) {
+        console.log(result);
+        console.log(`Image is now accessible through Cloudinary: ${petID}_happy.png`);
+      }, {public_id: `${petID}_happy`})
     });
   }
   else console.log(err);
