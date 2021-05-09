@@ -77,6 +77,7 @@ disclient.on('message', message => {
 
     //in lieu of a sophisticated event handler i just have this block leading to some functions
     if (command === 'i\'m' || command === 'im' || command === 'I’m') UserCreate(message, args, verifyDiscordID);
+    if (command === 'info') getInfo(message, verifyDiscordID);
     else if (command === 'pets' || command === 'pet') PetsCreate(message, args, verifyDiscordID);
     else if (command === 'color') TestColorPet(args);
     else if (command === 'search') searchForMe(verifyDiscordID);
@@ -97,6 +98,44 @@ disclient.on('message', message => {
     }
 
 }});
+
+async function getInfo(message, verifyDiscordID) {
+  //~info command
+
+  const infoBlock = {
+	color: 0x0099ff,
+	title: `Wildernest Information`,
+  description: `something went wrong`,
+  footer: {text: `something went wrong harder`}
+  };
+
+  //check if user exists
+  try {
+    const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE discordid = ${verifyDiscordID})`);
+    console.log(sel.rows[0].exists);
+    if (sel.rows[0].exists) {
+      const sel = await sql.query(`SELECT * FROM users WHERE discordid = ${verifyDiscordID}`);
+      infoBlock.description = `Your username is ${sel.rows[0].username} and you're user #${sel.rows[0].userid}.`
+      const hasPets = await sql.query(`SELECT exists(SELECT * FROM pets WHERE ownerid = ${sel.rows[0].userid})`);
+      if (hasPets.rows[0].exists) {
+        const sel = await sql.query(`SELECT * FROM pets WHERE ownerid = ${sel.rows[0].userid}`);
+        const petsArray = [];
+        for (i = 0; i < sel.rows.length; i++) {
+          petsArray.push(sel.rows[i].petname);
+        }
+        allPets = petsArray.join(', ');
+        infoBlock.footer.text = `Your pets are: ${allPets}. You can say **~hi** and then a pet name (like **~hi Bo**) to see one.`
+      }
+      else {
+        infoBlock.footer.text = `You don't have any pets yet, but you can change that with **~pets**.`
+      }
+    }
+    else {
+      infoBlock.description = `You aren't in my system yet, but you can try **~user** followed by your ideal name (like **~user Bob** or something) to make an account.`
+    }
+    message.reply({ embed: infoBlock });
+  } catch(err) { console.log(err) }
+}
 
 //async functions are the best for my purposes - being able to 'try' reading and writing to the SQL database was essential
 async function UserCreate(message, commanderName, verifyDiscordID) {
