@@ -33,7 +33,6 @@ const profanity = process.env.PROFANITY.split(' ');
 
 //Sends to my bot logs channel once the bot is ready for interaction
 disclient.once('ready', () => {
-  console.log(profanity);
   disclient.channels.cache.get(`825934332027469866`).send(`hewwo. I'm back online.`)
   //custom activity
   disclient.user.setActivity('http://wilderne.st/', { type: 'PLAYING' })
@@ -245,12 +244,12 @@ async function PetsCreate(message, args, verifyDiscordID) {
 
 async function searchForMe(verifyDiscordID) {
   const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE discordid = ${verifyDiscordID})`);
-  console.log(sel.rows[0]);
+  console.log(sel.rows[0].exists);
 }
 
 async function searchForSatan(verifyDiscordID) {
   const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE discordid = '666')`);
-  console.log(sel.rows[0]);
+  console.log(sel.rows[0].exists);
 }
 
 async function NewPetGen(discordUser, petName, species) {
