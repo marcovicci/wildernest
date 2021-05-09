@@ -372,6 +372,7 @@ async function NewPetGen(discordUser, petName, species) {
   //let's begin gm and fetch the base image for our pet species
   gm(`./pets/base/${species}/normal_colorable.png`)
   //colorize according to pet's color values
+  .colorspace(rgb)
   .fill(rgb(redValue, greenValue, blueValue))
   .colorize(100, 100, 100)
   .write(`./pets/id/${petID}_colored.png`, function (err) {
@@ -396,6 +397,7 @@ async function NewPetGen(discordUser, petName, species) {
   //happy ver
   gm(`./pets/base/${species}/happy_colorable.png`)
   //colorize according to pet's color values
+  .colorspace(rgb)
   .fill(rgb(redValue, greenValue, blueValue))
   .colorize(100, 100, 100)
   .write(`./pets/id/${petID}_colored_happy.png`, function (err) {
