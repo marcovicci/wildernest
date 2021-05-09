@@ -422,6 +422,7 @@ async function makePetPersonality() {
     if (reaction.emoji.name === '❌') {
       petPersonality.description = 'Cool. Consider that pet unmade.';
       finalMsg.edit({ embed: petPersonality });
+    }
     })
   	.catch(collected => {
       petPersonality.description = `I didn't catch your reaction in time, so I didn't make that pet for you.`;
