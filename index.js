@@ -168,65 +168,45 @@ async function userMake(message, args, verifyDiscordID) {
   }
 }
 
-//async functions are the best for my purposes - being able to 'try' reading and writing to the SQL database was essential
-async function UserCreate(message, commanderName, verifyDiscordID) {
-	try {
-    const sel = await sql.query(`SELECT userid FROM users WHERE username = '${commanderName}' OR discordid = ${verifyDiscordID}`);
-    //getting just the user ID val from this query
-    const checkUsers = sel.rows[0].userid;
+async function petsInfo(message, args, verifyDiscordID) {
+  try {
+    //does user exist?
+    const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE discordid = ${verifyDiscordID})`);
+      if (sel.rows[0].exists) {
+        //fetch user info
+        const userInfo = await sql.query(`SELECT * FROM users WHERE discordid = ${verifyDiscordID}`);
 
-  		//console.log('user id exists as ' + checkUsers);
-  		//If this check succeeds there is a user ID for this already, so let's do some more stuff.
-  		try {
-        const sel = await sql.query(`SELECT discordid FROM users WHERE userid = ${checkUsers}`);
-        const matchDiscord = '\'' + sel.rows[0].discordid + '\'';
+        //are there any pets?
+        const hasPets = await sql.query(`SELECT exists(SELECT * FROM pets WHERE ownerid = ${userInfo.rows[0].userid})`);
+        if (hasPets.rows[0].exists) {
+          const pets = await sql.query(`SELECT * FROM pets WHERE ownerid = ${userInfo.rows[0].userid}`);
+          const petsArray = [];
+          for (i = 0; i < pets.rows.length; i++) {
+            petsArray.push(pets.rows[i].petname);
+          }
+          allPets = petsArray.join(', ');
+          if (userInfo.rows[0].totalpets < userInfo.rows[0].allowedpets) {
+            return message.reply(`Your pets are: ${allPets}. You can say **~hi** and then a pet name (like **~hi Bo**) to see one. That's ${userInfo.rows[0].totalpets} in all, and you can have up to ${userInfo.rows[0].allowedpets}. Try **~newpet** for more info, or **~make Bob** (where Bob is your pet's name) if you're ready to jump into making a pet.`);
+          }
 
-        //Let's check if the discord account matches.
-        if (matchDiscord != verifyDiscordID) {
-          //console.log('desired discord ID is ' + matchDiscord);
+          else {
+            return message.reply(`Your pets are: ${allPets}. You can say **~hi** and then a pet name (like **~hi Bo**) to see one. You've filled all ${userInfo.rows[0].allowedpets} of your pet slots for now.`);
+          }
 
-    			//This isn't your account, let's just yell at you.
-    			return message.reply(`Sorry - I already know a ${commanderName} and their Discord ID is ${matchDiscord}, yours is ${verifyDiscordID}!`);
-        } else {
-    			//Discord ID matches. Cool. So, do you have a username already?
-          try { const sel = await sql.query(`SELECT username FROM users WHERE userid = ${checkUsers}`);
-          const matchUsername = sel.rows[0].username;
-          //yes!
-          return message.reply(`Hi ${matchUsername}. You're already in my system, with the correct ID of ${verifyDiscordID}. Thanks for checking.`);
-          } catch(err) { //nope, no username
-          console.log('No username found so we give you a new one.');
-           await sql.query(`
-     		   UPDATE users SET username = ${commanderName}
-           WHERE userid = ${checkUsers}
-     			`);
-           return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`); }
         }
-      } catch(err) {
-        console.log('problem finding discord id: ' + err)
-  			//Well, there's no discord ID. For now, we'll just let them write theirs in.
-        //In the future, we'll require them to authorize on a web interface.
-        //console.log('No discord ID found so we will write yours in.');
-  			await sql.query(`
-  		  UPDATE users SET discordid = ${verifyDiscordID}
-        WHERE userid = ${checkUsers}
-  			`);
-  			return message.reply(`Thanks, ${commanderName}! Your Discord ID has been added as ${verifyDiscordID}.`);
+        else {
+          return message.reply(`You don't have any pets yet. You can have up to ${userInfo.rows[0].allowedpets}. Try **~make** for more info, or **~make Bob** (where Bob is your pet's name) if you're ready to jump into making a pet.`);
+        }
       }
-  } catch(err) {
-    console.log('problem finding user: ' + err)
-    //console.log('No existing user ID or discord account, can we try to create one?');
-  	//There's no existing user ID for this name or discord account so let's make one.
-  	try {
-      await sql.query(`
-  		  INSERT INTO users (username, discordid)
-          VALUES ('${commanderName}', ${verifyDiscordID})
-  		`);
-      return message.reply(`Thanks, ${commanderName}! I made you a new account, with Discord ID ${verifyDiscordID}.`);
-    } catch(err) {
-      //If all else fails, just apologize and output the error for me.
-      console.log('Creating one failed... eek: '+ err);
-      return message.reply(`Sorry... I'm kinda freaking out. I hope Zelle is checking my logs.`);
-    }
+      else {
+        return message.reply(`You need an account before you can have pets! Try **~user** followed by your ideal name (like **~user Bob** or something) to make an account.`);
+      }
+  } catch(err) { console.log(err) }
+}
+
+async function makePetPrompt(ownMsg, verifyDiscordID) {
+  if (!args.length) {
+    return message.reply(`Awesome, let's make a pet. Can you please say **~make Bob** only instead of Bob, put the name of your new pet? No spaces in pet names, please! You'll get to select your pet's color and personality after that.`);
   }
 }
 
@@ -312,16 +292,6 @@ async function PetsCreate(message, args, verifyDiscordID) {
     }
 }
 
-async function searchForMe(verifyDiscordID) {
-  const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE discordid = ${verifyDiscordID})`);
-  console.log(sel.rows[0].exists);
-}
-
-async function searchForSatan(verifyDiscordID) {
-  const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE discordid = '666')`);
-  console.log(sel.rows[0].exists);
-}
-
 async function NewPetGen(discordUser, petName, species) {
 
   //start defining pet values... color
@@ -402,7 +372,8 @@ async function NewPetGen(discordUser, petName, species) {
   //let's begin gm and fetch the base image for our pet species
   gm(`./pets/base/${species}/normal_colorable.png`)
   //colorize according to pet's color values
-  .colorize(redValue, greenValue, blueValue)
+  .fill(rgb(redValue, greenValue, blueValue))
+  .colorize(100)
   .write(`./pets/id/${petID}_colored.png`, function (err) {
     if (!err) {
       gm(`./pets/id/${petID}_colored.png`)
@@ -425,7 +396,8 @@ async function NewPetGen(discordUser, petName, species) {
   //happy ver
   gm(`./pets/base/${species}/happy_colorable.png`)
   //colorize according to pet's color values
-  .colorize(redValue, greenValue, blueValue)
+  .fill(rgb(redValue, greenValue, blueValue))
+  .colorize(100)
   .write(`./pets/id/${petID}_colored_happy.png`, function (err) {
     if (!err) {
       gm(`./pets/id/${petID}_colored_happy.png`)
