@@ -118,10 +118,10 @@ async function getInfo(message, verifyDiscordID) {
       infoBlock.description = `Your username is ${sel.rows[0].username} and you're user #${sel.rows[0].userid}.`
       const hasPets = await sql.query(`SELECT exists(SELECT * FROM pets WHERE ownerid = ${sel.rows[0].userid})`);
       if (hasPets.rows[0].exists) {
-        const sel = await sql.query(`SELECT * FROM pets WHERE ownerid = ${sel.rows[0].userid}`);
+        const pets = await sql.query(`SELECT * FROM pets WHERE ownerid = ${sel.rows[0].userid}`);
         const petsArray = [];
-        for (i = 0; i < sel.rows.length; i++) {
-          petsArray.push(sel.rows[i].petname);
+        for (i = 0; i < pets.rows.length; i++) {
+          petsArray.push(pets.rows[i].petname);
         }
         allPets = petsArray.join(', ');
         infoBlock.footer.text = `Your pets are: ${allPets}. You can say **~hi** and then a pet name (like **~hi Bo**) to see one.`
