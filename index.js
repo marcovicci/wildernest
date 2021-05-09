@@ -13,6 +13,7 @@ const disclient = new Discord.Client();
 
 //GraphicsMagick setup
 var gm = require('gm');
+const imageMagick = gm.subClass({imageMagick: true});
 
 //postgreSQL client setup
 const { Pool } = require('pg');
@@ -280,23 +281,23 @@ const greenValue = args[3];
 const blueValue = args[4];
 
 //let's begin gm and fetch the base image for our pet species
-gm(`/pets/base/${species}/normal_colorable.png`)
+gm(`./pets/base/${species}/normal_colorable.png`)
 //colorize according to pet's color values
 .colorize(redValue, greenValue, blueValue)
 //composite with static pet image layer
-.composite(`/pets/base/${species}/normal_static.png`)
-.write(`/pets/id/${petID}_normal.png`, function (err) {
+.composite(`./pets/base/${species}/normal_static.png`)
+.write(`./pets/id/${petID}_normal.png`, function (err) {
   if (!err) console.log(`done! image saved to /pets/id/${petID}_normal.png`);
   else console.log(err);
 });
 
 //compose happy versions too
-gm(`/pets/base/${species}/happy_colorable.png`)
+gm(`./pets/base/${species}/happy_colorable.png`)
 //colorize according to pet's color values
 .colorize(redValue, greenValue, blueValue)
 //composite with static pet image layer
-.composite(`/pets/base/${species}/happy_static.png`)
-.write(`/pets/id/${petID}_happy.png`, function (err) {
+.composite(`./pets/base/${species}/happy_static.png`)
+.write(`./pets/id/${petID}_happy.png`, function (err) {
   if (!err) console.log(`done! image saved to /pets/id/${petID}_happy.png`);
   else console.log(err);
 });
