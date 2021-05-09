@@ -283,8 +283,9 @@ const blueValue = args[4];
 gm(`/pets/base/${species}/normal_colorable.png`)
 //colorize according to pet's color values
 .colorize(redValue, greenValue, blueValue)
-//compose with static pet image layer
-.compose(`/pets/base/${species}/normal_static.png`, `/pets/id/${petID}_normal.png`, function (err) {
+//composite with static pet image layer
+.composite(`/pets/base/${species}/normal_static.png`)
+.write(`/pets/id/${petID}_normal.png`, function (err) {
   if (!err) console.log(`done! image saved to /pets/id/${petID}_normal.png`);
   else console.log(err);
 });
@@ -293,8 +294,9 @@ gm(`/pets/base/${species}/normal_colorable.png`)
 gm(`/pets/base/${species}/happy_colorable.png`)
 //colorize according to pet's color values
 .colorize(redValue, greenValue, blueValue)
-//compose with static pet image layer
-.compose(`/pets/base/${species}/happy_static.png`, `/pets/id/${petID}_happy.png`, function (err) {
+//composite with static pet image layer
+.composite(`/pets/base/${species}/happy_static.png`)
+.write(`/pets/id/${petID}_happy.png`, function (err) {
   if (!err) console.log(`done! image saved to /pets/id/${petID}_happy.png`);
   else console.log(err);
 });
