@@ -2,6 +2,18 @@
 const Discord = require('discord.js');
 const disclient = new Discord.Client();
 
+//Twit bot setup
+const Twit = require('twit');
+const Twitter = new Twit(
+  consumer_key: process.env.TWIT_KEY,
+  consumer_secret: process.env.TWIT_SECRET,
+  access_token: '',
+  access_token_secret: ''
+);
+
+//GraphicsMagick setup
+var gm = require('gm');
+
 //postgreSQL client setup
 const { Pool } = require('pg');
 
@@ -63,6 +75,7 @@ disclient.on('message', message => {
     //in lieu of a sophisticated event handler i just have this block leading to some functions
     if (command === 'i\'m' || command === 'im' || command === 'I’m') UserCreate(message, args, verifyDiscordID);
     else if (command === 'pets' || command === 'pet') PetsCreate(message, args, verifyDiscordID);
+    else if (command === 'color') TestColorPet(args);
     else if (command === 'hi' || command === 'hey' || command === 'hello' || command === 'hiya' || command === 'heya' || command === 'heyo' || command === 'howdy') HelloPet(message, args, verifyDiscordID);
   } else {
     //but let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
@@ -254,6 +267,38 @@ async function HelloPet(message, args, verifyDiscordID) {
     console.log('Couldn\'t find user: ' + err)
     return message.reply(`Hi! Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
   }
+}
+
+async function TestColorPet(args) {
+//for manually recoloring pets, before minigame exists
+//id, species, redValue, greenValue, blueValue
+
+const petID = args[0];
+const species = args[1];
+const redValue = args[2];
+const greenValue = args[3];
+const blueValue = args[4];
+
+//let's begin gm and fetch the base image for our pet species
+gm(`/pets/base/${species}/normal_colorable.png`)
+//colorize according to pet's color values
+.colorize(redValue, greenValue, blueValue)
+//compose with static pet image layer
+.compose(`/pets/base/${species}/normal_static.png`, `/pets/id/${petID}_normal.png`, function (err) {
+  if (!err) console.log(`done! image saved to /pets/id/${petID}_normal.png`);
+  else console.log(err);
+});
+
+//compose happy versions too
+gm(`/pets/base/${species}/happy_colorable.png`)
+//colorize according to pet's color values
+.colorize(redValue, greenValue, blueValue)
+//compose with static pet image layer
+.compose(`/pets/base/${species}/happy_static.png`, `/pets/id/${petID}_happy.png`, function (err) {
+  if (!err) console.log(`done! image saved to /pets/id/${petID}_happy.png`);
+  else console.log(err);
+});
+
 }
 
 async function BuildPetEmbed(message, sel, checkUsers) {
