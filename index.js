@@ -186,16 +186,16 @@ async function petsInfo(message, args, verifyDiscordID) {
           }
           allPets = petsArray.join(', ');
           if (userInfo.rows[0].totalpets < userInfo.rows[0].allowedpets) {
-            return message.reply(`Your pets are: ${allPets}. You can say **~hi** and then a pet name (like **~hi Bo**) to see one. That's ${userInfo.rows[0].totalpets} in all, and you can have up to ${userInfo.rows[0].allowedpets}. Try **~newpet** for more info, or **~make Bob** (where Bob is your pet's name) if you're ready to jump into making a pet.`);
+            return message.reply(`Your pets are: ${allPets}. You can say **~hi** and then a pet name (like **~hi Bo**) to see one.\nThat's ${userInfo.rows[0].totalpets} in all, and you can have up to ${userInfo.rows[0].allowedpets}. Try **~make** to start the process of creating a pet.`);
           }
 
           else {
-            return message.reply(`Your pets are: ${allPets}. You can say **~hi** and then a pet name (like **~hi Bo**) to see one. You've filled all ${userInfo.rows[0].allowedpets} of your pet slots for now.`);
+            return message.reply(`Your pets are: ${allPets}. You can say **~hi** and then a pet name (like **~hi Bo**) to see one.\nYou've filled all ${userInfo.rows[0].allowedpets} of your pet slots for now.`);
           }
 
         }
         else {
-          return message.reply(`You don't have any pets yet. You can have up to ${userInfo.rows[0].allowedpets}. Try **~make** for more info, or **~make Bob** (where Bob is your pet's name) if you're ready to jump into making a pet.`);
+          return message.reply(`You don't have any pets yet. You can have up to ${userInfo.rows[0].allowedpets}. Try **~make** to start the process of creating a pet.`);
         }
       }
       else {
@@ -204,92 +204,72 @@ async function petsInfo(message, args, verifyDiscordID) {
   } catch(err) { console.log(err) }
 }
 
-async function makePetPrompt(ownMsg, verifyDiscordID) {
-  if (!args.length) {
-    return message.reply(`Awesome, let's make a pet. Can you please say **~make Bob** only instead of Bob, put the name of your new pet? No spaces in pet names, please! You'll get to select your pet's color and personality after that.`);
-  }
-}
-
-async function PetsCreate(message, args, verifyDiscordID) {
-  //check if we know this user already
-  console.log(verifyDiscordID);
+async function makePetPrompt(message, verifyDiscordID) {
   try {
-    const sel = await sql.query(`SELECT userid FROM users WHERE discordid = ${verifyDiscordID}`);
-    //getting just the user ID val from this query
-    const checkUsers = sel.rows[0].userid;
-    console.log(checkUsers);
-    //we know this guy, let's execute the command
+    //does user exist?
+    const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE discordid = ${verifyDiscordID})`);
+    if (sel.rows[0].exists) {
+      //user exists, fetch user info
+      const userInfo = await sql.query(`SELECT * FROM users WHERE discordid = ${verifyDiscordID}`);
+      if (userInfo.rows[0].totalpets < userInfo.rows[0].allowedpets) {
+        //let's make a pet
+        message.author.send(`Awesome, let's make a pet. First of all, what do you want your pet's name to be? Please reply with ONLY the name you want. No spaces in pet names, please.`)
+        .then(() => {
+          //create filter for the user who triggered the command
+          const filter = (user) => {
+        	return user.id === verifyDiscordID;
+          };
 
-    if (!args.length) {
-      //if no arguments let's fetch their Pets
-        try {
-          const sel = await sql.query(`SELECT petname FROM pets WHERE ownerid = ${checkUsers}`);
-          const checkPets = [];
-          for (i = 0; i < sel.rows.length; i++) {
-            checkPets.push(sel.rows[i].petname);
-          }
-          console.log('pets are ' + checkPets);
-          return message.reply(`You have some pets alright: ${checkPets} Say **~WN hi** and then a pet name to see one.`);
+          const collector = message.createReactionCollector(filter, { time: 30000 });
 
-        } catch(err) {
-          console.log('No pets: ' + err)
-          //no pets, let's tell them they can make one
-          return message.reply(`Hey, you actually don't have any pets. Try **~WN pets make** followed by the pet name you want.`);
-        }
-    }
-    else if (args[0] === 'make' || args[0] === 'create') {
-      //let's try to make a new pet!
-      //but first, let's make sure the user has room
-      try {
-        const sel = await sql.query(`SELECT totalpets, allowedpets FROM users WHERE userid = ${checkUsers}`);
-        const allowedPets = sel.rows[0].allowedpets;
-        const currentPets = sel.rows[0].totalpets;
-        if (allowedPets > currentPets) {
-          //we can make a pet!
-          try {
-            await sql.query(`
-        		  INSERT INTO pets (petname, ownerid)
-                VALUES ('${args[1]}', ${checkUsers})
-        		`);
+          collector.on('collect', m => {
+    	       console.log(`Collected ${m.content}`);
+             const args = m.content.trim().split(' ');
+             const sel = await sql.query(`SELECT exists(SELECT * FROM pets WHERE petname = ${args[0]})`);
+             if (sel.rows[0].exists) {
+               //pet name taken
+               return message.reply(`I already have a pet named ${args[0]} in my system, can you try another name?`);
+               collector.resetTimer();
+             }
+             else {
+               //let's try making a pet
+               collector.stop('success');
+             }
+           });
 
-            //if that worked, let's also update the current pets for that user
-            try {
-              await sql.query(`
-        		  UPDATE users SET totalpets = totalpets + 1
-              WHERE userid = ${checkUsers}
-        			`);
+           collector.on('end', collected => {
+    	        console.log(`Done collecting`);
+              if (!collector.end.reason == 'success') return message.reply(`I've timed out and stopped listening... you can try **~make** to restart the process.'`);
+            });
 
-              return message.reply(`Nice. I made you a pet named ${args[1]}.`);
-            } catch(err) {
-              //why didn't that work? let's see
-              console.log('Couldn\'t increment pet values... ' + err)
-              return message.reply(`Sorry... I'm kinda freaking out. I hope Zelle is checking my logs.`);
-            }
-          } catch(err) {
-            //pet name was probably taken
-            console.log('Couldn\'t make this pet... ' + err)
-            return message.reply(`I wasn't able to create that pet. I'll have better error responding soon.`);
-          }
+          message.channel.awaitMessages(filter, { max: 100, time: 30000, errors: ['time'] })
+          		.then(collected => {
+                const args = collected.content.trim().split(' ');
 
-        } else {
-          //pets are full
-          return message.reply(`Hey, you're only allowed to have ${allowedPets} pets and you already have ${currentPets} pets. Try **~WN pets** to see them.`);
-        }
-      } catch(err) {
-        console.log('Failed to fetch current pets and allowed pets: ' + err);
-        return message.reply(`Sorry... I'm kinda freaking out. I hope Zelle is checking my logs.`);
+                if (sel.rows[0].exists) {
+                  //pet name taken
+                  return message.reply(`I already have a pet named ${args[0]} in my system`);
+                }
+          			message.channel.send(``);
+          		})
+          		.catch(collected => {
+          			message.channel.send(`Sorry, I didn't get a reply in time. You can send **~make** again here to restart the process.`);
+          		});
+    		})
+        .catch(err => {
+    			console.log(`Could not send help DM to ${message.author.tag}.\n`, err);
+    			message.reply(`I think you've got your DMs turned off, but it's OK, we can do this right here.`);
+    		});
       }
+      else {
+        //too many pets
+        return message.reply(`You've filled all ${userInfo.rows[0].allowedpets} of your pet slots for now.`);
+      }
+    } else {
+      //no user
+      return message.reply(`You need an account before you can have pets! Try **~user** followed by your ideal name (like **~user Bob** or something) to make an account.`);
     }
-
-    else {
-      return message.reply(`I don't understand that command. Try just **~WN pets** instead.`);
-    }
-
-    } catch(err) {
-      //we dont knwo this guy
-      console.log('Couldn\'t find user: ' + err)
-      return message.reply(`Sorry, I don't know you yet! Can you try **~WN I'm** followed by the username you want?`);
-    }
+  } catch(err) {console.log(err)}
 }
 
 async function NewPetGen(discordUser, petName, species) {
@@ -530,14 +510,12 @@ gm(`./pets/base/${species}/normal_colorable.png`)
     //composite with static pet image layer
     .composite(`./pets/base/${species}/normal_static.png`)
     .write(`./pets/id/${petID}_normal.png`, function (err) {
-      if (!err) {
         cloudinary.uploader.upload(`./pets/id/${petID}_normal.png`,
         function(result) {
           console.log(result);
           console.log(`Image is now accessible through Cloudinary: ${petID}_normal.png`);
         }, {public_id: `${petID}_normal`})
-      }
-      else console.log(err);
+        message.reply(cloudinary.url(`${petID}_normal.png`));
     });
   }
   else console.log(err);
@@ -558,6 +536,7 @@ gm(`./pets/base/${species}/happy_colorable.png`)
         console.log(result);
         console.log(`Image is now accessible through Cloudinary: ${petID}_happy.png`);
       }, {public_id: `${petID}_happy`})
+      message.reply(cloudinary.url(`${petID}_happy.png`));
     });
   }
   else console.log(err);
