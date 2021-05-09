@@ -273,7 +273,6 @@ async function HelloPet(message, args, verifyDiscordID) {
 async function TestColorPet(args) {
 //for manually recoloring pets, before minigame exists
 //id, species, redValue, greenValue, blueValue
-
 const petID = args[0];
 const species = args[1];
 const redValue = args[2];
