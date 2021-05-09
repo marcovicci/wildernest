@@ -319,8 +319,7 @@ async function NewPetGen(discordUser, petName, species) {
       colorYourPet.description = 'Cool. Consider that pet unmade.';
       ownMsg.edit({ embed: colorYourPet });
 		}
-	})
-	.catch(collected => {
+	}).catch(collected => {
     colorYourPet.description = `I didn't catch your reaction in time, so I didn't make that pet for you.`;
     ownMsg.edit({ embed: colorYourPet });
 	});
@@ -419,12 +418,12 @@ async function makePetPersonality() {
       petPersonality.description = `Throw in some extra MEAT! 🍖 Consider it done.`;
       finalMsg.edit({ embed: petPersonality });
       pet_meat = 75;
+    }
     if (reaction.emoji.name === '❌') {
       petPersonality.description = 'Cool. Consider that pet unmade.';
       finalMsg.edit({ embed: petPersonality });
     }
-    })
-  	.catch(collected => {
+    }).catch(collected => {
       petPersonality.description = `I didn't catch your reaction in time, so I didn't make that pet for you.`;
       finalMsg.edit({ embed: petPersonality });
   	});
