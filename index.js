@@ -81,6 +81,7 @@ disclient.on('message', message => {
     else if (command === 'pets' || command === 'pet') PetsCreate(message, args, verifyDiscordID);
     else if (command === 'color') TestColorPet(args);
     else if (command === 'search') searchForMe(verifyDiscordID);
+    else if (command === 'badsearch') searchForSatan(verifyDiscordID);
     else if (command === 'hi' || command === 'hey' || command === 'hello' || command === 'hiya' || command === 'heya' || command === 'heyo' || command === 'howdy') HelloPet(message, args, verifyDiscordID);
   } else {
     //but let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
@@ -244,7 +245,12 @@ async function PetsCreate(message, args, verifyDiscordID) {
 
 async function searchForMe(verifyDiscordID) {
   const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE discordid = ${verifyDiscordID})`);
-  console.log(sel);
+  console.log(sel.rows[0]);
+}
+
+async function searchForSatan(verifyDiscordID) {
+  const sel = await sql.query(`SELECT exists(SELECT userid FROM users WHERE discordid = 666)`);
+  console.log(sel.rows[0]);
 }
 
 async function NewPetGen(discordUser, petName, species) {
