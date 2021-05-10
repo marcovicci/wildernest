@@ -191,25 +191,25 @@ async function makePetPrompt(message, verifyDiscordID) {
           const filter = (user) => {
         	return user.id === verifyDiscordID;
           };
+          const collector = message.channel.createMessageCollector(filter, { time: 60000 });
 
-	            message.channel.awaitMessages(filter, { max: 100, time: 60000, errors: ['time'] })
-		            .then(collected => {
-                  const args = m.content.trim().split(' ');
-                  const sel = sql.query(`SELECT exists(SELECT * FROM pets WHERE petname = ${args[0]})`);
-		            })
-                .then(sel => {
-                  if (sel.rows[0].exists) {
-                    //pet name taken
-                    return message.reply(`I already have a pet named ${args[0]} in my system, can you try another name?`);
-                  }
-                  else {
-                    //let's try making a pet
-                    NewPetGen(message, userInfo, verifyDiscordID, args[0], bird);
-                  }
-                })
-		            .catch(collected => {
-			               return message.reply(`I've timed out and stopped listening... you can try **~make** to restart the process.`);
-		            });
+          collector.on('collect', m => {
+            const args = m.content.trim().split(' ');
+            const sel = await sql.query(`SELECT exists(SELECT * FROM pets WHERE petname = ${args[0]})`);
+            if (sel.rows[0].exists) {
+              //pet name taken
+              return message.reply(`I already have a pet named ${args[0]} in my system, can you try another name?`);
+            }
+            else {
+              //let's try making a pet
+              NewPetGen(message, userInfo, verifyDiscordID, args[0], bird);
+            }
+          });
+
+          collector.on('end', collected => {
+          console.log(`Collected ${collected.size} items`);
+          });
+
     		})
         .catch(err => {
     			console.log(`Could not send help DM to ${message.author.tag}.\n`, err);
