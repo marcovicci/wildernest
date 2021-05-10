@@ -186,7 +186,6 @@ async function makePetPrompt(message, verifyDiscordID) {
       if (userInfo.rows[0].totalpets < userInfo.rows[0].allowedpets) {
         //let's make a pet
         const dms = await message.author.send(`Awesome, let's make a pet. First of all, what do you want your pet's name to be? Please reply with ONLY the name you want. No spaces in pet names, please.`)
-        .then(() => {
           //create filter for the user who triggered the command
           const filter = (user) => {
         	return user.id === verifyDiscordID;
@@ -208,7 +207,6 @@ async function makePetPrompt(message, verifyDiscordID) {
 		            .catch(collected => {
 			               return dms.reply(`I've timed out and stopped listening... you can try **~make** to restart the process.`);
 		            });
-    		})
         .catch(err => {
     			console.log(`Could not send help DM to ${message.author.tag}.\n`, err);
     			message.reply(`I think you've got your DMs turned off, but it's OK, we can do this right here.`);
