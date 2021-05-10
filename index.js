@@ -185,20 +185,20 @@ async function makePetPrompt(message, verifyDiscordID) {
       const userInfo = await sql.query(`SELECT * FROM users WHERE discordid = ${verifyDiscordID}`);
       if (userInfo.rows[0].totalpets < userInfo.rows[0].allowedpets) {
         //let's make a pet
-        message.author.send(`Awesome, let's make a pet. First of all, what do you want your pet's name to be? Please reply with ONLY the name you want. No spaces in pet names, please.`)
+        const dms = message.author.send(`Awesome, let's make a pet. First of all, what do you want your pet's name to be? Please reply with ONLY the name you want. No spaces in pet names, please.`)
         .then(() => {
           //create filter for the user who triggered the command
           const filter = (user) => {
         	return user.id === verifyDiscordID;
           };
 
-	            message.channel.awaitMessages(filter, { max: 100, time: 60000, errors: ['time'] })
+	            dms.channel.awaitMessages(filter, { max: 100, time: 60000, errors: ['time'] })
 		            .then (async collected => {
-                  const args = m.content.trim().split(' ');
+                  const args = collected.content.trim().split(' ');
                   const sel = sql.query(`SELECT exists(SELECT * FROM pets WHERE petname = ${args[0]})`);
                   if (sel.rows[0].exists) {
                     //pet name taken
-                    return message.reply(`I already have a pet named ${args[0]} in my system, can you try another name?`);
+                    return dms.reply(`I already have a pet named ${args[0]} in my system, can you try another name?`);
                   }
                   else {
                     //let's try making a pet
@@ -206,7 +206,7 @@ async function makePetPrompt(message, verifyDiscordID) {
                   }
                 })
 		            .catch(collected => {
-			               return message.reply(`I've timed out and stopped listening... you can try **~make** to restart the process.`);
+			               return dms.reply(`I've timed out and stopped listening... you can try **~make** to restart the process.`);
 		            });
     		})
         .catch(err => {
