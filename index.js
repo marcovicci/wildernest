@@ -62,19 +62,6 @@ disclient.on('message', message => {
     //console.log('cmd is ' + command);
     //console.log('args is ' + args);
 
-    //but let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
-    //this is goofy, but i include it both inside and outside that if block, because otherwise i might execute a function with swears
-    //and if i include it BEFORE the if block, the "return" prevents the if block from triggering!
-    //todo: refactor this later
-    if (`'${message.guild}'` != null && `'${message.guild.id}'` === `'${process.env.HOME_GUILD}'` && `'${message.author.id}'` != `'${process.env.MY_ID}'`){
-      for (i = 0; i < swearCheck.length; i++) {
-        if (profanity.includes(swearCheck[i])) {
-          message.delete();
-          disclient.channels.cache.get(`825934332027469866`).send(`message "${message.content}" from ${message.author} in channel ${message.channel} contained this bad word: ${swearCheck[i]}`);
-          return;
-        }}
-    }
-
     //in lieu of a sophisticated event handler i just have this block leading to some functions
     if (command === 'i\'m' || command === 'im' || command === 'I’m' || command === 'user') userMake(message, args, verifyDiscordID);
     if (command === 'info') getInfo(message, verifyDiscordID);
@@ -82,21 +69,7 @@ disclient.on('message', message => {
     else if (command === 'make') makePetPrompt(message, verifyDiscordID);
     else if (command === 'color') TestColorPet(args);
     else if (command === 'hi' || command === 'hey' || command === 'hello' || command === 'hiya' || command === 'heya' || command === 'heyo' || command === 'howdy') HelloPet(message, args, verifyDiscordID);
-  } else {
-    //but let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
-    //this is goofy, but i include it both inside and outside that if block, because otherwise i might execute a function with swears
-    //and if i include it BEFORE the if block, the "return" prevents the if block from triggering!
-    //todo: refactor this later
-    if (`'${message.guild}'` != null && `'${message.guild.id}'` === `'${process.env.HOME_GUILD}'` && `'${message.author.id}'` != `'${process.env.MY_ID}'`){
-      for (i = 0; i < swearCheck.length; i++) {
-        if (profanity.includes(swearCheck[i])) {
-          message.delete();
-          disclient.channels.cache.get(`825934332027469866`).send(`message "${message.content}" from ${message.author} in channel ${message.channel} contained this bad word: ${swearCheck[i]}`);
-          return;
-        }}
-    }
-
-}});
+  }});
 
 async function getInfo(message, verifyDiscordID) {
   //~info command
