@@ -78,10 +78,9 @@ disclient.on('message', message => {
     //in lieu of a sophisticated event handler i just have this block leading to some functions
     if (command === 'i\'m' || command === 'im' || command === 'I’m' || command === 'user') userMake(message, args, verifyDiscordID);
     if (command === 'info') getInfo(message, verifyDiscordID);
-    else if (command === 'pets' || command === 'pet') PetsCreate(message, args, verifyDiscordID);
+    else if (command === 'pets' || command === 'pet') petsInfo(message, args, verifyDiscordID);
+    else if (command === 'make') makePetPrompt(message, args, verifyDiscordID);
     else if (command === 'color') TestColorPet(args);
-    else if (command === 'search') searchForMe(verifyDiscordID);
-    else if (command === 'badsearch') searchForSatan(verifyDiscordID);
     else if (command === 'hi' || command === 'hey' || command === 'hello' || command === 'hiya' || command === 'heya' || command === 'heyo' || command === 'howdy') HelloPet(message, args, verifyDiscordID);
   } else {
     //but let's add a swear filter if we're in my discord - i'll never get partner status otherwise!
