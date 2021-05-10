@@ -185,7 +185,7 @@ async function makePetPrompt(message, verifyDiscordID) {
       const userInfo = await sql.query(`SELECT * FROM users WHERE discordid = ${verifyDiscordID}`);
       if (userInfo.rows[0].totalpets < userInfo.rows[0].allowedpets) {
         //let's make a pet
-        const dms = message.author.send(`Awesome, let's make a pet. First of all, what do you want your pet's name to be? Please reply with ONLY the name you want. No spaces in pet names, please.`)
+        const dms = await message.author.send(`Awesome, let's make a pet. First of all, what do you want your pet's name to be? Please reply with ONLY the name you want. No spaces in pet names, please.`)
         .then(() => {
           //create filter for the user who triggered the command
           const filter = (user) => {
