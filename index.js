@@ -79,7 +79,7 @@ disclient.on('message', message => {
     if (command === 'i\'m' || command === 'im' || command === 'I’m' || command === 'user') userMake(message, args, verifyDiscordID);
     if (command === 'info') getInfo(message, verifyDiscordID);
     else if (command === 'pets' || command === 'pet') petsInfo(message, args, verifyDiscordID);
-    else if (command === 'make') makePetPrompt(message, args, verifyDiscordID);
+    else if (command === 'make') makePetPrompt(message, verifyDiscordID);
     else if (command === 'color') TestColorPet(args);
     else if (command === 'hi' || command === 'hey' || command === 'hello' || command === 'hiya' || command === 'heya' || command === 'heyo' || command === 'howdy') HelloPet(message, args, verifyDiscordID);
   } else {
