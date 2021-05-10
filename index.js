@@ -185,19 +185,20 @@ async function makePetPrompt(message, verifyDiscordID) {
       const userInfo = await sql.query(`SELECT * FROM users WHERE discordid = ${verifyDiscordID}`);
       if (userInfo.rows[0].totalpets < userInfo.rows[0].allowedpets) {
         //let's make a pet
-        const dms = await message.author.send(`Awesome, let's make a pet. First of all, what do you want your pet's name to be? Please reply with ONLY the name you want. No spaces in pet names, please.`)
+        message.author.send(`Awesome, let's make a pet. First of all, what do you want your pet's name to be? Please reply with ONLY the name you want. No spaces in pet names, please.`)
+        .then(() => {
           //create filter for the user who triggered the command
           const filter = (user) => {
         	return user.id === verifyDiscordID;
           };
 
-	            dms.channel.awaitMessages(filter, { max: 100, time: 60000, errors: ['time'] })
+	            message.channel.awaitMessages(filter, { max: 100, time: 60000, errors: ['time'] })
 		            .then (async collected => {
-                  const args = collected.content.trim().split(' ');
+                  const args = m.content.trim().split(' ');
                   const sel = sql.query(`SELECT exists(SELECT * FROM pets WHERE petname = ${args[0]})`);
                   if (sel.rows[0].exists) {
                     //pet name taken
-                    return dms.reply(`I already have a pet named ${args[0]} in my system, can you try another name?`);
+                    return message.author.send(`I already have a pet named ${args[0]} in my system, can you try another name?`);
                   }
                   else {
                     //let's try making a pet
@@ -205,8 +206,9 @@ async function makePetPrompt(message, verifyDiscordID) {
                   }
                 })
 		            .catch(collected => {
-			               return dms.reply(`I've timed out and stopped listening... you can try **~make** to restart the process.`);
+			               return message.author.send(`I've timed out and stopped listening... you can try **~make** to restart the process.`);
 		            });
+    		})
         .catch(err => {
     			console.log(`Could not send help DM to ${message.author.tag}.\n`, err);
     			message.reply(`I think you've got your DMs turned off, but it's OK, we can do this right here.`);
