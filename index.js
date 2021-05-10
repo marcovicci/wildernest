@@ -193,7 +193,7 @@ async function makePetPrompt(message, verifyDiscordID) {
           };
 
 	            message.channel.awaitMessages(filter, { max: 100, time: 60000, errors: ['time'] })
-		            .then(collected async => {
+		            .then (async collected => {
                   const args = m.content.trim().split(' ');
                   const sel = sql.query(`SELECT exists(SELECT * FROM pets WHERE petname = ${args[0]})`);
                   if (sel.rows[0].exists) {
